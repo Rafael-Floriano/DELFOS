@@ -7,7 +7,7 @@ import java.nio.file.Paths;
 
 public class VenvDirectoryManager {
 
-    private final String venvDirectory = "venv";
+    private final String venvDirectory = "src/main/resources/scripts/venv";
 
     public void createVenvDirectoryIfNotExists() {
         Path path = Paths.get(venvDirectory);
@@ -17,7 +17,7 @@ public class VenvDirectoryManager {
                 Files.createDirectory(path);
                 System.out.println("Diretório 'venv' criado com sucesso.");
 
-                ProcessBuilder pb = new ProcessBuilder("python", "-m", "venv", path.toString());
+                ProcessBuilder pb = new ProcessBuilder("python3", "-m", "venv", path.toString());
                 Process process = pb.start();
                 int exitCode = process.waitFor();
 
