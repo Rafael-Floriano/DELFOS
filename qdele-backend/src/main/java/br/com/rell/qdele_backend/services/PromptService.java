@@ -1,5 +1,6 @@
 package br.com.rell.qdele_backend.services;
 
+import br.com.rell.qdele_backend.repositories.PromptTemplateRepository;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,27 +13,8 @@ public class PromptService {
 
     @Autowired
     private IAiService ollamaService;
-
-    private String promptTemplate = """
-            # Context
-                
-            Database: {database}
-            Version: {database_version}
-                        
-            ## Relevant Tables for the Query
-                        
-            {database_tables}
-                        
-            ---
-                        
-            # User Request
-            {user_request}
-                        
-            ---
-                        
-            # Response Format
-            Only return the SQL query.
-            """;
+    @Autowired
+    private PromptTemplateService promptTemplateService;
 
     private final String mockDatabase = "postgresSQL";
     private final String mockedDatabaseVersion = "15";
@@ -62,10 +44,11 @@ public class PromptService {
     }
 
     public String mountPrompt(final String userRequest) {
-        promptTemplate = promptTemplate.replace("{database}", mockDatabase);
-        promptTemplate = promptTemplate.replace("{database_version}", mockedDatabaseVersion);
-        promptTemplate = promptTemplate.replace("{database_tables}", mockedDatabaseTables);
-        promptTemplate = promptTemplate.replace("{user_request}", userRequest);
-        return promptTemplate;
+        String template = promptTemplateService.findDefaultPromptTemplate();
+        template = template.replace("{database}", mockDatabase);
+        template = template.replace("{database_version}", mockedDatabaseVersion);
+        template = template.replace("{database_tables}", mockedDatabaseTables);
+        template = template.replace("{user_request}", userRequest);
+        return template;
     }
 }
