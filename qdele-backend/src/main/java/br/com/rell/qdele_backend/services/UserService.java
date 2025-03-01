@@ -29,6 +29,17 @@ public class UserService {
         return userRepository.findById(id);
     }
 
+    public void softDeleteUser(Long id) {
+        Optional<User> userOptional = userRepository.findById(id);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            user.setDeleted(true);
+            userRepository.save(user);
+        } else {
+            throw new RuntimeException("Usuário não encontrado com o ID: " + id);
+        }
+    }
+
 
     public User updateUser(Long id, User userDetails) {
         User user = userRepository.findById(id)

@@ -1,19 +1,22 @@
 package br.com.rell.qdele_backend.controllers;
 
 import br.com.rell.qdele_backend.entities.User;
+import br.com.rell.qdele_backend.repositories.UserRepository;
 import br.com.rell.qdele_backend.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("api/users")
 public class UserController {
 
     @Autowired
     private UserService userService;
+    private UserRepository userRepository;
 
     @PostMapping
     public ResponseEntity<User> createUser(@RequestBody User user) {
@@ -41,10 +44,15 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        userService.deleteUser(id);
-        return ResponseEntity.noContent().build();
+    public void deleteUser(@PathVariable Long id) {
+        userService.softDeleteUser(id);
     }
+
+//    @DeleteMapping("/{id}")
+//    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+//        userService.deleteUser(id);
+//        return ResponseEntity.noContent().build();
+//    }
 
     @GetMapping("/username/{username}")
     public ResponseEntity<User> getUserByUsername(@PathVariable String username) {
