@@ -17,7 +17,7 @@ public class PromptTemplateService {
             # Context
                 
             Database: {database}
-            Version: {database_version}
+            Version: Undefined
                         
             ## Relevant Tables for the Query
                         
