@@ -24,4 +24,18 @@ public class PromptTemplate {
         this.content = content;
     }
 
+    @PrePersist
+    public void prePersist() {
+        if (this.deleted == null) {
+            this.deleted = false;
+        }
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        if (this.deleted == null) {
+            this.deleted = false;
+        }
+    }
+
 }
