@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "database_connection")
-@SQLRestriction("deleted != false")
 public class DatabaseConnection {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
