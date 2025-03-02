@@ -1,9 +1,15 @@
 package br.com.rell.qdele_backend.entities;
 
 import jakarta.persistence.*;
+import lombok.Data;
+import org.hibernate.annotations.SQLRestriction;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "qdele_user")
+@SQLRestriction("deleted = false")
+@Data
 public class User {
 
     @Id
@@ -11,30 +17,19 @@ public class User {
     private Long id;
     private String username;
     private String password;
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
-    public String getUsername() {
-        return username;
+    private String createdBy;
+    private LocalDateTime createdDate;
+    private String modifiedBy;
+    private LocalDateTime modifiedDate;
+    private Boolean deleted = false;
+
+    public enum Role {
+        SUPER, READER
     }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public User() {
     }
