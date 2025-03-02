@@ -1,8 +1,14 @@
 package br.com.rell.qdele_backend.entities;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "database_structure")
 public class DatabaseStructure {
 
