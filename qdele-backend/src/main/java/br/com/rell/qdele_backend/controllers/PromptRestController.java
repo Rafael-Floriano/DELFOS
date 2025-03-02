@@ -14,8 +14,9 @@ public class PromptRestController {
     private PromptService promptService;
 
     @PostMapping
-    public String generatePrompt(@RequestBody final String prompt) {
+    public String generatePrompt(@RequestParam final Long databaseConnectionId, @RequestBody final String prompt) {
         return promptService.process(
+                databaseConnectionId,
                 prompt
         );
     }
