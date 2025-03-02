@@ -5,6 +5,8 @@ import br.com.rell.qdele_backend.entities.DatabaseStructure;
 import br.com.rell.qdele_backend.entities.DatabaseType;
 import br.com.rell.qdele_backend.repositories.DatabaseStructureRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -39,23 +41,28 @@ public class DatabaseStructureService {
         StringBuilder structure = new StringBuilder();
 
         try {
+            JSONArray tablesArray = new JSONArray();
+
             jdbcTemplate.queryForList("""
-                            SELECT table_name, column_name, data_type, character_maximum_length 
-                            FROM information_schema.columns
-                            WHERE table_schema NOT IN ('pg_catalog', 'information_schema')
-                            ORDER BY table_name, ordinal_position;
-                            """)
-                    .forEach(row -> structure.append(
-                            String.format("Tabela: %s, Coluna: %s, Tipo: %s, Tamanho: %s\n",
-                                    row.get("table_name"),
-                                    row.get("column_name"),
-                                    row.get("data_type"),
-                                    row.get("character_maximum_length"))
-                    ));
+            SELECT table_name, column_name, data_type, character_maximum_length 
+            FROM information_schema.columns
+            WHERE table_schema NOT IN ('pg_catalog', 'information_schema')
+            ORDER BY table_name, ordinal_position;
+            """)
+                    .forEach(row -> {
+                        JSONObject tableInfo = new JSONObject();
+                        tableInfo.put("table_name", row.get("table_name"));
+                        tableInfo.put("column_name", row.get("column_name"));
+                        tableInfo.put("data_type", row.get("data_type"));
+                        tableInfo.put("character_maximum_length", row.get("character_maximum_length"));
+                        tablesArray.put(tableInfo);
+                    });
+
             databaseStructureRepository.save(
-                    new DatabaseStructure(null, structure.toString(), databaseConnection.getId(), false)
+                    new DatabaseStructure(null, tablesArray.toString(), databaseConnection.getId(), false)
             );
-            return structure.toString();
+
+            return tablesArray.toString();
         } catch (Exception e) {
             log.warn("Erro ao escanear o banco: {}", e.getMessage());
             return null;
