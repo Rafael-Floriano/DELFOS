@@ -6,4 +6,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface DatabaseStructureRepository extends JpaRepository<DatabaseStructure, Long> {
+
+    DatabaseStructure findByDatabaseConnectionId(final Long databaseConnectionId);
+
 }
