@@ -16,7 +16,7 @@ public class DatabaseStructure {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String structure;
 
     @Column(name = "database_connection_id", nullable = false)
