@@ -1,0 +1,38 @@
+[
+    {
+        "input": "Quais clientes fizeram compras?",
+        "context": "Banco de dados: PostgreSQL\nTabelas: cliente(id, nome, email), venda(id, cliente_id, produto_id, quantidade, total)",
+        "output": "SELECT DISTINCT c.id, c.nome, c.email FROM cliente c JOIN venda v ON c.id = v.cliente_id;"
+    },
+    {
+        "input": "Quantos produtos foram vendidos?", 
+        "context": "Banco de dados: PostgreSQL\nTabelas: venda(id, cliente_id, produto_id, quantidade, total)",
+        "output": "SELECT SUM(quantidade) FROM venda;"
+    },
+    {
+        "input": "Qual o total de vendas por cliente?",
+        "context": "Banco de dados: PostgreSQL\nTabelas: cliente(id, nome, email), venda(id, cliente_id, produto_id, quantidade, total)",
+        "output": "SELECT c.id, c.nome, SUM(v.total) FROM cliente c JOIN venda v ON c.id = v.cliente_id GROUP BY c.id, c.nome;"
+    },
+    {
+        "input": "Quem comprou mais de um produto?",
+        "context": "Banco de dados: PostgreSQL\nTabelas: cliente(id, nome, email), venda(id, cliente_id, produto_id, quantidade, total)",
+        "output": "SELECT DISTINCT c.id, c.nome FROM cliente c JOIN venda v ON c.id = v.cliente_id WHERE v.quantidade > 1;"
+    },
+    {
+        "input": "Quais produtos foram vendidos e seus preços?",
+        "context": "Banco de dados: PostgreSQL\nTabelas: produto(id, nome, preco), venda(id, cliente_id, produto_id, quantidade, total)", 
+        "output": "SELECT p.id, p.nome, p.preco FROM produto p JOIN venda v ON p.id = v.produto_id;"
+    },
+    {
+        "input": "Qual o total arrecadado com vendas?",
+        "context": "Banco de dados: PostgreSQL\nTabelas: venda(id, cliente_id, produto_id, quantidade, total)",
+        "output": "SELECT SUM(total) FROM venda;"
+    },
+    {
+        "input": "Onde mora o cliente Fernando Lima?",
+        "context": "Banco de dados: PostgreSQL\nTabelas: cliente(id, nome, email), endereco(id, cliente_id, rua, cidade, estado, cep)",
+        "output": "SELECT e.rua, e.cidade, e.estado, e.cep FROM endereco e JOIN cliente c ON e.cliente_id = c.id WHERE c.nome = '%Fernando Lima%';"
+    }
+
+]
