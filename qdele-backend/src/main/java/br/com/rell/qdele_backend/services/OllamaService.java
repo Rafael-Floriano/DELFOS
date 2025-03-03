@@ -4,15 +4,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.ollama.OllamaChatModel;
 import org.springframework.ai.ollama.api.OllamaOptions;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class OllamaService implements IAiService {
 
-    @Autowired
-    private OllamaChatModel chatModel;
+    private final OllamaChatModel chatModel;
 
     @Override
     public String sendPrompt(final String prompt) {
