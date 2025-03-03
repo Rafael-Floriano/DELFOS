@@ -1,6 +1,7 @@
 package br.com.rell.qdele_backend.services;
 
 import br.com.rell.qdele_backend.entities.DatabaseConnection;
+import br.com.rell.qdele_backend.exceptions.NotFoundException;
 import br.com.rell.qdele_backend.repositories.DatabaseConnectionRepository;
 import br.com.rell.qdele_backend.repositories.DatabaseStructureRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +17,7 @@ public class DatabaseConnectionService {
     private final DatabaseStructureRepository databaseStructureRepository;
 
     public DatabaseConnection findDatabaseConnection(final Long databaseConnectionId) {
-        return databaseConnectionRepository.findById(databaseConnectionId).orElseThrow(() -> new RuntimeException("Database connection not found: " + databaseConnectionId));
+        return databaseConnectionRepository.findById(databaseConnectionId).orElseThrow(() -> new NotFoundException("Database connection not found: " + databaseConnectionId));
     }
 
     public DatabaseConnection create(final DatabaseConnection databaseConnection) {
