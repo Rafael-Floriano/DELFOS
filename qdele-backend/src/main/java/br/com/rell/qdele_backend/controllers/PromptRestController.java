@@ -10,8 +10,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/prompt")
 public class PromptRestController {
 
-    @Autowired
-    private PromptService promptService;
+    private final PromptService promptService;
 
     @PostMapping
     public String generatePrompt(@RequestParam final Long databaseConnectionId, @RequestBody final String prompt) {
