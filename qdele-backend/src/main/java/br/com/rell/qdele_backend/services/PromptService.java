@@ -7,18 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-@AllArgsConstructor
 @RequiredArgsConstructor
 public class PromptService {
 
-    @Autowired
-    private IAiService ollamaService;
-    @Autowired
-    private PromptTemplateService promptTemplateService;
-    @Autowired
-    private DatabaseConnectionService databaseConnectionService;
-    @Autowired
-    private DatabaseStructureService databaseStructureService;
+    private final IAiService ollamaService;
+    private final PromptTemplateService promptTemplateService;
+    private final DatabaseConnectionService databaseConnectionService;
+    private final DatabaseStructureService databaseStructureService;
 
     public String process(final Long databaseConnectionId, final String userRequest) {
 

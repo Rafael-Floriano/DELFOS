@@ -4,22 +4,21 @@ import br.com.rell.qdele_backend.entities.DatabaseConnection;
 import br.com.rell.qdele_backend.entities.DatabaseStructure;
 import br.com.rell.qdele_backend.entities.DatabaseType;
 import br.com.rell.qdele_backend.repositories.DatabaseStructureRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class DatabaseStructureService {
 
-    @Autowired
-    private DatabaseStructureRepository databaseStructureRepository;
-    @Autowired
-    private DatabaseConnectionService databaseConnectionService;
+    private final DatabaseStructureRepository databaseStructureRepository;
+    private final DatabaseConnectionService databaseConnectionService;
 
     public String findStructureByDatabaseConnectionId(final Long databaseConnectionId) {
         final DatabaseStructure databaseStructure = databaseStructureRepository.findByDatabaseConnectionId(databaseConnectionId);

@@ -2,17 +2,17 @@ package br.com.rell.qdele_backend.services;
 
 import br.com.rell.qdele_backend.entities.User;
 import br.com.rell.qdele_backend.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
 
     public User createUser(User user) {
