@@ -2,16 +2,16 @@ package br.com.rell.qdele_backend.services;
 
 import br.com.rell.qdele_backend.entities.PromptTemplate;
 import br.com.rell.qdele_backend.repositories.PromptTemplateRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class PromptTemplateService {
 
-    @Autowired
-    private PromptTemplateRepository promptTemplateRepository;
+    private final PromptTemplateRepository promptTemplateRepository;
 
     private String promptDefaultTemplate = """
             # Context
