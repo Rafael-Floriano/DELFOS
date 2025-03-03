@@ -41,11 +41,11 @@ INSERT INTO cliente (nome, email) VALUES
 
 -- Inserindo endereços adicionais
 INSERT INTO endereco (cliente_id, rua, cidade, estado, cep) VALUES
-(3, 'Rua C', 'Belo Horizonte', 'MG', '30130-000'),
-(4, 'Rua D', 'Curitiba', 'PR', '80240-000'),
-(5, 'Rua E', 'Porto Alegre', 'RS', '90050-000'),
-(6, 'Rua F', 'Salvador', 'BA', '40010-000'),
-(7, 'Rua G', 'Recife', 'PE', '50030-000');
+(1, 'Rua C', 'Belo Horizonte', 'MG', '30130-000'),
+(2, 'Rua D', 'Curitiba', 'PR', '80240-000'),
+(3, 'Rua E', 'Porto Alegre', 'RS', '90050-000'),
+(4, 'Rua F', 'Salvador', 'BA', '40010-000'),
+(5, 'Rua G', 'Recife', 'PE', '50030-000');
 
 -- Inserindo mais produtos
 INSERT INTO produto (nome, preco) VALUES
@@ -57,11 +57,11 @@ INSERT INTO produto (nome, preco) VALUES
 
 -- Inserindo mais vendas
 INSERT INTO venda (cliente_id, produto_id, quantidade, total) VALUES
-(3, 3, 1, 450.00),   -- Carlos comprou um teclado mecânico
-(4, 4, 2, 3600.00),  -- Ana comprou dois monitores de 27"
-(5, 5, 1, 1200.00),  -- Fernando comprou uma cadeira gamer
-(6, 6, 1, 300.00),   -- Juliana comprou um headset Bluetooth
-(7, 7, 2, 1200.00),  -- Ricardo comprou dois SSDs de 1TB
-(1, 3, 1, 450.00),   -- João comprou um teclado mecânico
-(2, 4, 1, 1800.00);  -- Maria comprou um monitor de 27"
+(1, 3, 1, 450.00),   -- Carlos comprou um teclado mecânico
+(2, 4, 2, 3600.00),  -- Ana comprou dois monitores de 27"
+(3, 5, 1, 1200.00),  -- Fernando comprou uma cadeira gamer
+(4, 6, 1, 300.00),   -- Juliana comprou um headset Bluetooth
+(4, 7, 2, 1200.00),  -- Ricardo comprou dois SSDs de 1TB
+(5, 3, 1, 450.00),   -- João comprou um teclado mecânico
+(1, 4, 1, 1800.00);  -- Maria comprou um monitor de 27"
 
