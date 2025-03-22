@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Drawer, List, Toolbar } from '@mui/material';
-import ConnectionLabel from './ConnectionLabel';
+import ConnectionLabel from '../ConnectionLabel/ConnectionLabel';
 
 export default function Sidebar() {
   const [drawerWidth, setDrawerWidth] = useState(240);
@@ -55,7 +55,9 @@ export default function Sidebar() {
     >
       <Toolbar />
       <List>
-        <ConnectionLabel />
+        <ConnectionLabel dbName="SenacDatabase" iconSrc="/icons/mysql-logo.svg" />
+        <ConnectionLabel dbName="MyEcommerce" iconSrc="/icons/mysql-logo.svg" />
+        <ConnectionLabel dbName="TCS" iconSrc="/icons/mysql-logo.svg" />
       </List>
       <div
         style={{
