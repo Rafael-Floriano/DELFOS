@@ -1,12 +1,12 @@
 import React from 'react';
 import './App.css';
-import SpeechToText from './SpeechToText';
+import Dashboard from './pages/Dashboard';
 
 const App: React.FC = () => {
   return (
     <div className="App">
       <header className="App-header">
-        <SpeechToText />
+        <Dashboard />
       </header>
     </div>
   );
