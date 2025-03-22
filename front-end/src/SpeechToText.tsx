@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, IconButton, Typography } from '@mui/material';
+import { Box, IconButton, Typography, CircularProgress } from '@mui/material';
 import MicIcon from '@mui/icons-material/Mic';
 import StopIcon from '@mui/icons-material/Stop';
 
@@ -10,8 +10,9 @@ declare global {
   }
 }
 
-const SpeechToText: React.FC = ({ onStart, onStop }: { onStart: () => void, onStop: () => void }) => {
+const SpeechToText: React.FC = ({ onStart, onStop }: { onStart: () => void; onStop: () => void }) => {
   const [isRecording, setIsRecording] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const [transcription, setTranscription] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [timer, setTimer] = useState(0);
@@ -33,7 +34,7 @@ const SpeechToText: React.FC = ({ onStart, onStop }: { onStart: () => void, onSt
         const lastResult = event.results[event.results.length - 1];
         const resultText = lastResult[0].transcript;
         setTranscription(resultText);
-        console.log(lastResult[0].transcript);
+        console.log(resultText);
       };
 
       recognition.onerror = (event: any) => {
@@ -68,8 +69,13 @@ const SpeechToText: React.FC = ({ onStart, onStop }: { onStart: () => void, onSt
   const stopRecording = () => {
     if (recognition) {
       setIsRecording(false);
+      setIsProcessing(true);
       onStop();
       recognition.stop();
+
+      setTimeout(() => {
+        setIsProcessing(false);
+      }, 3000);
     }
   };
 
@@ -80,6 +86,7 @@ const SpeechToText: React.FC = ({ onStart, onStop }: { onStart: () => void, onSt
       <Box
         sx={{
           display: 'inline-flex',
+          flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
           width: 120,
@@ -88,12 +95,19 @@ const SpeechToText: React.FC = ({ onStart, onStop }: { onStart: () => void, onSt
           backgroundColor: isRecording ? 'red' : 'green',
           cursor: 'pointer',
           position: 'relative',
+          opacity: isProcessing ? 0 : 1,
+          transition: 'opacity 0.3s',
         }}
       >
-        <IconButton onClick={isRecording ? stopRecording : startRecording} sx={{ color: '#fff' }}>
-          {isRecording ? <StopIcon /> : <MicIcon />}
-        </IconButton>
-        {isRecording && (
+        {!isProcessing && (
+          <IconButton
+            onClick={isRecording ? stopRecording : startRecording}
+            sx={{ color: '#fff' }}
+          >
+            {isRecording ? <StopIcon /> : <MicIcon />}
+          </IconButton>
+        )}
+        {isRecording && !isProcessing && (
           <Typography
             variant="caption"
             sx={{
@@ -107,6 +121,15 @@ const SpeechToText: React.FC = ({ onStart, onStop }: { onStart: () => void, onSt
           </Typography>
         )}
       </Box>
+
+      {isProcessing && (
+        <Box mt={3} textAlign="center">
+          <CircularProgress />
+          <Typography variant="body2" mt={1}>
+            Processando sua requisição...
+          </Typography>
+        </Box>
+      )}
     </Box>
   );
 };
