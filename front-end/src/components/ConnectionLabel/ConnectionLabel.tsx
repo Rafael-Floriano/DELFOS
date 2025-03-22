@@ -1,11 +1,16 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Button, Box } from '@mui/material';
 
-const ConnectionLabel = ({ dbName = "Postgres", iconSrc = "/icons/postgres-logo.svg" }) => {
-  const [selected, setSelected] = useState(false);
+interface ConnectionLabelProps {
+  dbName: string;
+  iconSrc: string;
+  selected: boolean;
+  onSelect: (dbName: string) => void;
+}
 
+const ConnectionLabel: React.FC<ConnectionLabelProps> = ({ dbName, iconSrc, selected, onSelect }) => {
   const handleClick = () => {
-    setSelected(!selected);
+    onSelect(dbName);
   };
 
   return (
@@ -17,7 +22,8 @@ const ConnectionLabel = ({ dbName = "Postgres", iconSrc = "/icons/postgres-logo.
         borderRadius: 0,
         justifyContent: "flex-start",
         gap: 1.5,
-        textTransform: "none"
+        textTransform: "none",
+        backgroundColor: selected ? 'rgba(25, 118, 210, 0.08)' : 'transparent'
       }}
     >
       <Box

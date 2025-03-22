@@ -33,6 +33,7 @@ const SpeechToText: React.FC = ({ onStart, onStop }: { onStart: () => void, onSt
         const lastResult = event.results[event.results.length - 1];
         const resultText = lastResult[0].transcript;
         setTranscription(resultText);
+        console.log(lastResult[0].transcript);
       };
 
       recognition.onerror = (event: any) => {

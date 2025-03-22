@@ -11,6 +11,12 @@ const Sidebar: React.FC<SidebarProps> = ({ drawerWidth, setDrawerWidth }) => {
   const [dragging, setDragging] = useState(false);
   const [startX, setStartX] = useState(0);
 
+  const [selectedDb, setSelectedDb] = useState<string | null>(null);
+
+  const handleSelect = (dbName: string) => {
+    setSelectedDb(dbName);
+  };
+
   const handleMouseDown = (e: any) => {
     setDragging(true);
     setStartX(e.clientX);
@@ -59,9 +65,24 @@ const Sidebar: React.FC<SidebarProps> = ({ drawerWidth, setDrawerWidth }) => {
     >
       <Toolbar />
       <List>
-        <ConnectionLabel dbName="SenacDatabase" iconSrc="/icons/database/postgresql-logo-svgrepo-com.svg" />
-        <ConnectionLabel dbName="MyEcommerce" iconSrc="/icons/database/postgresql-logo-svgrepo-com.svg" />
-        <ConnectionLabel dbName="TCS" iconSrc="/icons/database/postgresql-logo-svgrepo-com.svg" />
+        <ConnectionLabel
+          dbName="SenacDatabase"
+          iconSrc="/icons/database/postgresql-logo-svgrepo-com.svg"
+          selected={selectedDb === "SenacDatabase"}
+          onSelect={handleSelect}
+        />
+        <ConnectionLabel
+          dbName="MyEcommerce"
+          iconSrc="/icons/database/postgresql-logo-svgrepo-com.svg"
+          selected={selectedDb === "MyEcommerce"}
+          onSelect={handleSelect}
+        />
+        <ConnectionLabel
+          dbName="TCS"
+          iconSrc="/icons/database/postgresql-logo-svgrepo-com.svg"
+          selected={selectedDb === "TCS"}
+          onSelect={handleSelect}
+        />
       </List>
       <div
         style={{
