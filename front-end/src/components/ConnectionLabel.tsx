@@ -1,7 +1,7 @@
-import { Button, Box } from "@mui/material";
-import { useState } from "react";
+import React, { useState } from 'react';
+import { Button, Box } from '@mui/material';
 
-const ConnectionLabel = () => {
+const ConnectionLabel = ({ dbName = "Postgres", iconSrc = "/icons/postgres-logo.svg" }) => {
   const [selected, setSelected] = useState(false);
 
   const handleClick = () => {
@@ -16,18 +16,18 @@ const ConnectionLabel = () => {
       onClick={handleClick}
       sx={{
         borderRadius: 0,
-        justifyContent: "flex-start", // alinha conteúdo à esquerda
-        gap: 1.5, // espaço entre ícone e texto
-        textTransform: "none" // mantém o texto como "Postgres", sem caixa alta
+        justifyContent: "flex-start",
+        gap: 1.5,
+        textTransform: "none"
       }}
     >
       <Box
         component="img"
-        src="/icons/postgres-logo.svg" // coloque o caminho certo do seu ícone
-        alt="Postgres"
+        src={iconSrc}
+        alt={dbName}
         sx={{ width: 24, height: 24 }}
       />
-      Postgres
+      {dbName}
     </Button>
   );
 };
