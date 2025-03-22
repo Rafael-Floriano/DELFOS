@@ -1,11 +1,16 @@
-import Sidebar from "../components/SideBar/Sidebar";
+import React from 'react';
+import Sidebar from '../components/SideBar/Sidebar';
+import Workbench from '../components/Workbench/Workbench';
 
-const Dashboard = () => {
-    return (
-        <>
-            <Sidebar/>
-        </>
-    );
-}
+const App: React.FC = () => {
 
-export default Dashboard;
+
+  return (
+      <div>
+        <Sidebar />
+        <Workbench />
+      </div>
+  );
+};
+
+export default App;

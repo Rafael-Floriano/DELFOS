@@ -11,7 +11,6 @@ const ConnectionLabel = ({ dbName = "Postgres", iconSrc = "/icons/postgres-logo.
   return (
     <Button
       fullWidth
-      variant={selected ? "contained" : "outlined"}
       color={selected ? "primary" : "inherit"}
       onClick={handleClick}
       sx={{

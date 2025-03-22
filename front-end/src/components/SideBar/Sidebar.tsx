@@ -55,9 +55,9 @@ export default function Sidebar() {
     >
       <Toolbar />
       <List>
-        <ConnectionLabel dbName="SenacDatabase" iconSrc="/icons/mysql-logo.svg" />
-        <ConnectionLabel dbName="MyEcommerce" iconSrc="/icons/mysql-logo.svg" />
-        <ConnectionLabel dbName="TCS" iconSrc="/icons/mysql-logo.svg" />
+        <ConnectionLabel dbName="SenacDatabase" iconSrc="/icons/database/postgresql-logo-svgrepo-com.svg" />
+        <ConnectionLabel dbName="MyEcommerce" iconSrc="/icons/database/postgresql-logo-svgrepo-com.svg" />
+        <ConnectionLabel dbName="TCS" iconSrc="/icons/database/postgresql-logo-svgrepo-com.svg" />
       </List>
       <div
         style={{
