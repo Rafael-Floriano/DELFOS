@@ -1,21 +1,25 @@
-import React, { useState } from 'react';
-import { Drawer, List, Toolbar } from '@mui/material';
-import ConnectionLabel from '../ConnectionLabel/ConnectionLabel';
+import { Drawer, List, Toolbar } from "@mui/material";
+import ConnectionLabel from "../ConnectionLabel/ConnectionLabel";
+import React, { useState } from "react";
 
-export default function Sidebar() {
-  const [drawerWidth, setDrawerWidth] = useState(240);
+interface SidebarProps {
+  drawerWidth: number;
+  setDrawerWidth: (width: number) => void;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ drawerWidth, setDrawerWidth }) => {
   const [dragging, setDragging] = useState(false);
   const [startX, setStartX] = useState(0);
 
-  const handleMouseDown = (e:any) => {
+  const handleMouseDown = (e: any) => {
     setDragging(true);
     setStartX(e.clientX);
   };
 
-  const handleMouseMove = (e:any) => {
+  const handleMouseMove = (e: any) => {
     if (dragging) {
       const newWidth = drawerWidth + (e.clientX - startX);
-      if (newWidth > 100) { 
+      if (newWidth > 100) {
         setDrawerWidth(newWidth);
         setStartX(e.clientX);
       }
@@ -72,4 +76,6 @@ export default function Sidebar() {
       />
     </Drawer>
   );
-}
+};
+
+export default Sidebar;
