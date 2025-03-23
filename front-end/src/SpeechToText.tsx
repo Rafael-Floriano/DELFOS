@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, IconButton, Typography } from '@mui/material';
-import MicIcon from '@mui/icons-material/Mic';
-import StopIcon from '@mui/icons-material/Stop';
+import { Box, Typography } from '@mui/material';
 
 declare global {
   interface Window {
@@ -10,7 +8,7 @@ declare global {
   }
 }
 
-const SpeechToText: React.FC = ({ onStart, onStop }: { onStart: () => void, onStop: () => void }) => {
+const SpeechToText: React.FC<{ onStart: () => void, onStop: () => void }> = ({ onStart, onStop }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [transcription, setTranscription] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
@@ -31,8 +29,7 @@ const SpeechToText: React.FC = ({ onStart, onStop }: { onStart: () => void, onSt
 
       recognition.onresult = (event: any) => {
         const lastResult = event.results[event.results.length - 1];
-        const resultText = lastResult[0].transcript;
-        setTranscription(resultText);
+        setTranscription(lastResult[0].transcript);
         console.log(lastResult[0].transcript);
       };
 
@@ -55,6 +52,18 @@ const SpeechToText: React.FC = ({ onStart, onStop }: { onStart: () => void, onSt
     return () => clearInterval(interval);
   }, [isRecording]);
 
+  
+  useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      if (event.key.toLowerCase() === 'v') {
+        isRecording ? stopRecording() : startRecording();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [isRecording]);
+
   const startRecording = () => {
     if (recognition) {
       setIsRecording(true);
@@ -74,40 +83,32 @@ const SpeechToText: React.FC = ({ onStart, onStop }: { onStart: () => void, onSt
   };
 
   return (
-    <Box textAlign="center" mt={5}>
-      {errorMessage && <Typography color="error">{errorMessage}</Typography>}
+    <>
+      {errorMessage && (
+        <Typography color="error" textAlign="center">
+          {errorMessage}
+        </Typography>
+      )}
 
-      <Box
-        sx={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: 120,
-          height: 120,
-          borderRadius: '50%',
-          backgroundColor: isRecording ? 'red' : 'green',
-          cursor: 'pointer',
-          position: 'relative',
-        }}
-      >
-        <IconButton onClick={isRecording ? stopRecording : startRecording} sx={{ color: '#fff' }}>
-          {isRecording ? <StopIcon /> : <MicIcon />}
-        </IconButton>
-        {isRecording && (
-          <Typography
-            variant="caption"
-            sx={{
-              position: 'absolute',
-              bottom: 8,
-              fontSize: '12px',
-              color: '#fff',
-            }}
-          >
-            {timer}s
-          </Typography>
-        )}
-      </Box>
-    </Box>
+      {/* Indicador discreto no canto direito quando está gravando */}
+      {isRecording && (
+        <Box
+          sx={{
+            position: 'fixed',
+            top: '10px',
+            right: '20px',
+            backgroundColor: 'red',
+            color: 'white',
+            padding: '5px 15px',
+            borderRadius: '8px',
+            fontWeight: 'bold',
+            boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.3)',
+          }}
+        >
+          🎤 Gravando... ({timer}s)
+        </Box>
+      )}
+    </>
   );
 };
 
