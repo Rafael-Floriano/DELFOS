@@ -11,8 +11,23 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ drawerWidth, setDrawerWidth }) => {
 
+  const [connectionLabels, setConnectionLabels] = useState<any[]>([
+    {
+      dbName: "SenacDatabase",
+      iconSrc: "/icons/database/postgresql-logo-svgrepo-com.svg",
+    },
+    {
+      dbName: "MyEcommerce",
+      iconSrc: "/icons/database/postgresql-logo-svgrepo-com.svg",
+    },
+    {
+      dbName: "TCS",
+      iconSrc: "/icons/database/postgresql-logo-svgrepo-com.svg",
+    },
+  ])
+
   const handleEditConnection = (dbName: string) => {
-    setEditingConnection({ dbName }); // você pode adicionar mais dados se quiser
+    setEditingConnection({ dbName })
     setIsModalOpen(true);
   };
   
@@ -71,7 +86,16 @@ const Sidebar: React.FC<SidebarProps> = ({ drawerWidth, setDrawerWidth }) => {
   };
 
   const handleSaveConnection = (data: any) => {
-    console.log('Salvar conexão:', data);
+    setIsModalOpen(false);
+    setConnectionLabels(
+      prevItems => [
+        ...prevItems,
+         {
+          dbName: data.name,
+          iconSrc: "/icons/database/postgresql-logo-svgrepo-com.svg",
+         }
+        ]
+      );
   };
 
   const handleMouseUp = () => {
@@ -108,24 +132,16 @@ const Sidebar: React.FC<SidebarProps> = ({ drawerWidth, setDrawerWidth }) => {
     >
       <Toolbar />
       <List>
-        <ConnectionLabel
-          dbName="SenacDatabase"
-          iconSrc="/icons/database/postgresql-logo-svgrepo-com.svg"
-          selected={selectedDb === "SenacDatabase"}
-          onSelect={handleSelect}
-        />
-        <ConnectionLabel
-          dbName="MyEcommerce"
-          iconSrc="/icons/database/postgresql-logo-svgrepo-com.svg"
-          selected={selectedDb === "MyEcommerce"}
-          onSelect={handleSelect}
-        />
-        <ConnectionLabel
-          dbName="TCS"
-          iconSrc="/icons/database/postgresql-logo-svgrepo-com.svg"
-          selected={selectedDb === "TCS"}
-          onSelect={handleSelect}
-        />
+        {
+          connectionLabels.map((object, i) => 
+          <ConnectionLabel
+            dbName={object.dbName}
+            iconSrc={object.iconSrc}
+            selected={selectedDb === object.dbName}
+            onSelect={handleSelect}
+          />
+          )
+        }
       </List>
       <div
         style={{
