@@ -1,6 +1,8 @@
 import { Drawer, List, Toolbar } from "@mui/material";
 import ConnectionLabel from "../ConnectionLabel/ConnectionLabel";
 import React, { useState } from "react";
+import { Menu, MenuItem } from "@mui/material";
+import ConnectionModal from "../Modal/ConnectionModal/ConnectionModal";
 
 interface SidebarProps {
   drawerWidth: number;
@@ -8,6 +10,42 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ drawerWidth, setDrawerWidth }) => {
+
+  const handleEditConnection = (dbName: string) => {
+    setEditingConnection({ dbName }); // você pode adicionar mais dados se quiser
+    setIsModalOpen(true);
+  };
+  
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingConnection, setEditingConnection] = useState<null | any>(null); 
+
+  const handleCreateConnection = () => {
+    handleClose();
+    setEditingConnection(null);
+    setIsModalOpen(true);
+  };
+
+  const [contextMenu, setContextMenu] = useState<{
+    mouseX: number;
+    mouseY: number;
+  } | null>(null);
+  
+  const handleContextMenu = (
+    event: React.MouseEvent,
+    dbName?: string
+  ) => {
+    event.preventDefault();
+    setContextMenu({
+      mouseX: event.clientX + 2,
+      mouseY: event.clientY - 6,
+    });
+    setEditingConnection(dbName ? { dbName } : null);
+  };
+  
+  const handleClose = () => {
+    setContextMenu(null);
+  };
+
   const [dragging, setDragging] = useState(false);
   const [startX, setStartX] = useState(0);
 
@@ -32,6 +70,10 @@ const Sidebar: React.FC<SidebarProps> = ({ drawerWidth, setDrawerWidth }) => {
     }
   };
 
+  const handleSaveConnection = (data: any) => {
+    console.log('Salvar conexão:', data);
+  };
+
   const handleMouseUp = () => {
     setDragging(false);
   };
@@ -54,6 +96,7 @@ const Sidebar: React.FC<SidebarProps> = ({ drawerWidth, setDrawerWidth }) => {
   return (
     <Drawer
       variant="permanent"
+      onContextMenu={handleContextMenu}
       sx={{
         width: drawerWidth,
         flexShrink: 0,
@@ -95,6 +138,24 @@ const Sidebar: React.FC<SidebarProps> = ({ drawerWidth, setDrawerWidth }) => {
         }}
         onMouseDown={handleMouseDown}
       />
+      <Menu
+        open={contextMenu !== null}
+        onClose={handleClose}
+        anchorReference="anchorPosition"
+        anchorPosition={
+          contextMenu !== null
+            ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
+            : undefined
+        }
+      >
+        <MenuItem onClick={handleCreateConnection}>{editingConnection ? 'Editar conexão' : 'Criar nova conexão'}</MenuItem>
+      </Menu>
+      <ConnectionModal
+      open={isModalOpen}
+      onClose={() => setIsModalOpen(false)}
+      onSave={handleSaveConnection}
+      initialData={editingConnection}
+    />
     </Drawer>
   );
 };
