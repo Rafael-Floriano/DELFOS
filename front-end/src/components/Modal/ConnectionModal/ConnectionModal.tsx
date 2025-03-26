@@ -7,6 +7,7 @@ const ConnectionModal: React.FC<ConnectionModalProps> = ({
     onClose,
     onSave,
     initialData,
+    edit,
   }) => {
     const [formData, setFormData] = useState<ConnectionData>({
       name: "",
@@ -55,7 +56,7 @@ const ConnectionModal: React.FC<ConnectionModalProps> = ({
     return (
       <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
         <DialogTitle>
-          {initialData ? "Editar Conexão" : "Nova Conexão"}
+          {edit ? "Editar Conexão" : "Nova Conexão"}
         </DialogTitle>
         <DialogContent>
           <Grid container spacing={2} mt={1}>

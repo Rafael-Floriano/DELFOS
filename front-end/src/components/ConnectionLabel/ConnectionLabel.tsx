@@ -6,17 +6,27 @@ interface ConnectionLabelProps {
   iconSrc: string;
   selected: boolean;
   onSelect: (dbName: string) => void;
+  onRightClick: () => void;
 }
 
-const ConnectionLabel: React.FC<ConnectionLabelProps> = ({ dbName, iconSrc, selected, onSelect }) => {
+const ConnectionLabel: React.FC<ConnectionLabelProps> = ({ dbName, iconSrc, selected, onSelect, onRightClick }) => {
   const handleClick = () => {
     onSelect(dbName);
   };
+
+  const handleRightClick = (event:any) => {
+    if (event.button === 2) {
+      onRightClick();
+    } else {
+      onSelect(dbName);
+    }
+  }
 
   return (
     <Button
       fullWidth
       color={selected ? "primary" : "inherit"}
+      onContextMenu={handleRightClick}
       onClick={handleClick}
       sx={{
         borderRadius: 0,

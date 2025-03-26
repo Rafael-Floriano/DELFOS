@@ -27,6 +27,7 @@ import {
     dbName: string;
     iconSrc: string;
     selected: boolean;
+    edit:boolean;
     onSelect: (dbName: string) => void;
     onEdit: (dbName: string) => void;
   }

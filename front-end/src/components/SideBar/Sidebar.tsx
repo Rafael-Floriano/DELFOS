@@ -11,6 +11,9 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ drawerWidth, setDrawerWidth }) => {
 
+  const [isclickInConnectionLabel, setIsclickInConnectionLabel] = useState<boolean>(false);
+  const [selectedConnectionLabel, setSelectedConnectionLabel] = useState<number>(0);
+
   const [connectionLabels, setConnectionLabels] = useState<any[]>([
     {
       dbName: "SenacDatabase",
@@ -32,7 +35,7 @@ const Sidebar: React.FC<SidebarProps> = ({ drawerWidth, setDrawerWidth }) => {
   };
   
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingConnection, setEditingConnection] = useState<null | any>(null); 
+  const [editingConnection, setEditingConnection] = useState<null | string | any>(null); 
 
   const handleCreateConnection = () => {
     handleClose();
@@ -55,6 +58,7 @@ const Sidebar: React.FC<SidebarProps> = ({ drawerWidth, setDrawerWidth }) => {
       mouseY: event.clientY - 6,
     });
     setEditingConnection(dbName ? { dbName } : null);
+    console.log("handleContextMenu", dbName)
   };
   
   const handleClose = () => {
@@ -102,6 +106,11 @@ const Sidebar: React.FC<SidebarProps> = ({ drawerWidth, setDrawerWidth }) => {
     setDragging(false);
   };
 
+  const handleRightClickConnectionLabel = (connectionLabelNumber:number) => {
+    setIsclickInConnectionLabel(true);
+    setSelectedConnectionLabel(connectionLabelNumber);
+  };
+
   React.useEffect(() => {
     if (dragging) {
       document.addEventListener('mousemove', handleMouseMove);
@@ -116,6 +125,11 @@ const Sidebar: React.FC<SidebarProps> = ({ drawerWidth, setDrawerWidth }) => {
       document.removeEventListener('mouseup', handleMouseUp);
     };
   }, [dragging]);
+
+  const handleDeleteConnection = () => {
+    setConnectionLabels(prev => prev.filter((_, i) => i !== selectedConnectionLabel));
+    setContextMenu(null);
+  }
 
   return (
     <Drawer
@@ -139,6 +153,7 @@ const Sidebar: React.FC<SidebarProps> = ({ drawerWidth, setDrawerWidth }) => {
             iconSrc={object.iconSrc}
             selected={selectedDb === object.dbName}
             onSelect={handleSelect}
+            onRightClick={() => handleRightClickConnectionLabel(i)}
           />
           )
         }
@@ -164,13 +179,19 @@ const Sidebar: React.FC<SidebarProps> = ({ drawerWidth, setDrawerWidth }) => {
             : undefined
         }
       >
-        <MenuItem onClick={handleCreateConnection}>{editingConnection ? 'Editar conexão' : 'Criar nova conexão'}</MenuItem>
+        <MenuItem onClick={handleCreateConnection}>{isclickInConnectionLabel ? 'Editar conexão' : 'Criar nova conexão'}</MenuItem>
+        {
+          (isclickInConnectionLabel && 
+            <MenuItem onClick={handleDeleteConnection}>Excluir conexão</MenuItem>
+          )
+        }
       </Menu>
       <ConnectionModal
       open={isModalOpen}
       onClose={() => setIsModalOpen(false)}
       onSave={handleSaveConnection}
       initialData={editingConnection}
+      edit={isclickInConnectionLabel}
     />
     </Drawer>
   );
