@@ -1,5 +1,6 @@
 package br.com.rell.qdele_backend.services;
 
+import br.com.rell.qdele_backend.dto.DatabaseConnectionLabelRequest;
 import br.com.rell.qdele_backend.dto.DatabaseConnectionRequest;
 import br.com.rell.qdele_backend.entities.DatabaseConnection;
 import br.com.rell.qdele_backend.exceptions.NotFoundException;
@@ -36,7 +37,11 @@ public class DatabaseConnectionService {
 
     public List<DatabaseConnection> getAll() {
         log.info("Fetching all database connections");
-        return databaseConnectionRepository.findByDeletedFalse();
+        return databaseConnectionRepository.findAll();
+    }
+
+    public List<DatabaseConnectionLabelRequest> getDatabaseConnections() {
+        return databaseConnectionRepository.findAll().stream().map(DatabaseConnectionMapper::ToDto).toList();
     }
 
     public DatabaseConnection getById(final Long id) {
