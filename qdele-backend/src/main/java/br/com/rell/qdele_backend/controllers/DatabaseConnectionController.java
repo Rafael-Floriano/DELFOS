@@ -1,5 +1,6 @@
 package br.com.rell.qdele_backend.controllers;
 
+import br.com.rell.qdele_backend.dto.DatabaseConnectionRequest;
 import br.com.rell.qdele_backend.entities.DatabaseConnection;
 import br.com.rell.qdele_backend.services.DatabaseConnectionService;
 import lombok.RequiredArgsConstructor;
@@ -16,8 +17,8 @@ public class DatabaseConnectionController {
     private final DatabaseConnectionService databaseConnectionService;
 
     @PostMapping
-    public ResponseEntity<DatabaseConnection> create(@RequestBody DatabaseConnection databaseConnection) {
-        DatabaseConnection createdConnection = databaseConnectionService.create(databaseConnection);
+    public ResponseEntity<DatabaseConnection> create(@RequestBody DatabaseConnectionRequest databaseConnectionRequest) {
+        DatabaseConnection createdConnection = databaseConnectionService.create(databaseConnectionRequest);
         return ResponseEntity.ok(createdConnection);
     }
 
