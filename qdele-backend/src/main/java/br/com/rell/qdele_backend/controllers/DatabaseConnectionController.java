@@ -1,5 +1,6 @@
 package br.com.rell.qdele_backend.controllers;
 
+import br.com.rell.qdele_backend.dto.DatabaseConnectionLabelRequest;
 import br.com.rell.qdele_backend.dto.DatabaseConnectionRequest;
 import br.com.rell.qdele_backend.entities.DatabaseConnection;
 import br.com.rell.qdele_backend.services.DatabaseConnectionService;
@@ -26,6 +27,11 @@ public class DatabaseConnectionController {
     public ResponseEntity<List<DatabaseConnection>> getAll() {
         List<DatabaseConnection> connections = databaseConnectionService.getAll();
         return ResponseEntity.ok(connections);
+    }
+
+    @GetMapping("/all")
+    public List<DatabaseConnectionLabelRequest> getDatabaseConnections() {
+        return databaseConnectionService.getDatabaseConnections();
     }
 
     @GetMapping("/{id}")

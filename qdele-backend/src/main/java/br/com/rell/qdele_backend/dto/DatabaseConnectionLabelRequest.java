@@ -1,4 +1,7 @@
 package br.com.rell.qdele_backend.dto;
 
-public class DatabaseConnectionLabelRequest {
+public record DatabaseConnectionLabelRequest(
+        long id,
+        String label
+) {
 }
