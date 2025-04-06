@@ -1,7 +1,10 @@
 package br.com.rell.qdele_backend.services;
 
+import br.com.rell.qdele_backend.dto.DatabaseConnectionLabelRequest;
+import br.com.rell.qdele_backend.dto.DatabaseConnectionRequest;
 import br.com.rell.qdele_backend.entities.DatabaseConnection;
 import br.com.rell.qdele_backend.exceptions.NotFoundException;
+import br.com.rell.qdele_backend.mapper.DatabaseConnectionMapper;
 import br.com.rell.qdele_backend.repositories.DatabaseConnectionRepository;
 import br.com.rell.qdele_backend.repositories.DatabaseStructureRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +27,8 @@ public class DatabaseConnectionService {
                 .orElseThrow(() -> new NotFoundException("Database connection not found: " + databaseConnectionId));
     }
 
-    public DatabaseConnection create(final DatabaseConnection databaseConnection) {
+    public DatabaseConnection create(final DatabaseConnectionRequest databaseConnectionRequest) {
+        final DatabaseConnection databaseConnection = DatabaseConnectionMapper.toEntity(databaseConnectionRequest);
         log.info("Creating a new database connection: {}", databaseConnection.getName());
         databaseConnection.setCreatedDate(LocalDateTime.now());
         databaseConnection.setDeleted(false);
@@ -33,7 +37,11 @@ public class DatabaseConnectionService {
 
     public List<DatabaseConnection> getAll() {
         log.info("Fetching all database connections");
-        return databaseConnectionRepository.findByDeletedFalse();
+        return databaseConnectionRepository.findAll();
+    }
+
+    public List<DatabaseConnectionLabelRequest> getDatabaseConnections() {
+        return databaseConnectionRepository.findAll().stream().map(DatabaseConnectionMapper::ToDto).toList();
     }
 
     public DatabaseConnection getById(final Long id) {
