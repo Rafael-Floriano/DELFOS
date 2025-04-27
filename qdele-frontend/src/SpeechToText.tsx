@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Typography } from '@mui/material';
+import httpClient from './services/client/DelfosClient';
+import QueryResults from './components/QueryResults/QueryResults';
 
 declare global {
   interface Window {
@@ -14,6 +16,9 @@ const SpeechToText: React.FC<{ onStart: () => void, onStop: () => void }> = ({ o
   const [transcription, setTranscription] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [timer, setTimer] = useState(0);
+  const [queryResults, setQueryResults] = useState<any[]>([]);
+  const [columns, setColumns] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const recognition =
     typeof window.SpeechRecognition !== 'undefined'
@@ -41,16 +46,18 @@ const SpeechToText: React.FC<{ onStart: () => void, onStop: () => void }> = ({ o
   }, [recognition]);
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let interval: ReturnType<typeof setInterval> | undefined;
     if (isRecording) {
       interval = setInterval(() => {
         setTimer((prev) => prev + 1);
       }, 1000);
     } else {
       setTimer(0);
-      clearInterval(interval);
+      if (interval) clearInterval(interval);
     }
-    return () => clearInterval(interval);
+    return () => {
+      if (interval) clearInterval(interval);
+    };
   }, [isRecording]);
 
   
@@ -64,6 +71,39 @@ const SpeechToText: React.FC<{ onStart: () => void, onStop: () => void }> = ({ o
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, [isRecording]);
+
+  const sendTranscriptionToBackend = async (text: string) => {
+    try {
+      setIsLoading(true);
+      const response = await httpClient.post('/prompt?databaseConnectionId=1', text, {
+        headers: {
+          'Content-Type': 'text/plain',
+        },
+      });
+      
+      if (response.data && response.data.response && Array.isArray(response.data.response)) {
+        const results = response.data.response;
+        if (results.length > 0) {
+          setColumns(Object.keys(results[0]));
+          setQueryResults(results);
+        } else {
+          setQueryResults([]);
+          setColumns([]);
+        }
+      } else {
+        setQueryResults([]);
+        setColumns([]);
+        setErrorMessage('Formato de resposta inválido do servidor.');
+      }
+      
+      console.log('Transcription sent to backend successfully');
+    } catch (error) {
+      console.error('Error sending transcription to backend:', error);
+      setErrorMessage('Erro ao enviar transcrição para o servidor.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const startRecording = () => {
     if (recognition) {
@@ -82,6 +122,11 @@ const SpeechToText: React.FC<{ onStart: () => void, onStop: () => void }> = ({ o
       onStop();
       recognition.stop();
 
+      // Send the transcription to the backend
+      if (transcription) {
+        sendTranscriptionToBackend(transcription);
+      }
+
       setTimeout(() => {
         setIsProcessing(false);
       }, 3000);
@@ -89,14 +134,20 @@ const SpeechToText: React.FC<{ onStart: () => void, onStop: () => void }> = ({ o
   };
 
   return (
-    <>
+    <Box sx={{ 
+      width: '100%', 
+      height: '100vh', 
+      display: 'flex', 
+      flexDirection: 'column',
+      backgroundColor: '#1e1e1e',
+      overflow: 'hidden'
+    }}>
       {errorMessage && (
         <Typography color="error" textAlign="center">
           {errorMessage}
         </Typography>
       )}
 
-      {/* Indicador discreto no canto direito quando está gravando */}
       {isRecording && (
         <Box
           sx={{
@@ -109,12 +160,22 @@ const SpeechToText: React.FC<{ onStart: () => void, onStop: () => void }> = ({ o
             borderRadius: '8px',
             fontWeight: 'bold',
             boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.3)',
+            zIndex: 1000,
           }}
         >
           🎤 Gravando... ({timer}s)
         </Box>
       )}
-    </>
+
+      <Box sx={{ flex: 1, overflow: 'hidden' }}>
+        <QueryResults
+          data={queryResults}
+          columns={columns}
+          isLoading={isLoading}
+          error={errorMessage}
+        />
+      </Box>
+    </Box>
   );
 };
 
