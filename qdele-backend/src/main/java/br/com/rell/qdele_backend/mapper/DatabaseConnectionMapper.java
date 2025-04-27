@@ -4,7 +4,6 @@ import br.com.rell.qdele_backend.dto.DatabaseConnectionLabelRequest;
 import br.com.rell.qdele_backend.dto.DatabaseConnectionRequest;
 import br.com.rell.qdele_backend.entities.DatabaseConnection;
 
-import javax.xml.crypto.Data;
 import java.time.LocalDateTime;
 
 public class DatabaseConnectionMapper {
