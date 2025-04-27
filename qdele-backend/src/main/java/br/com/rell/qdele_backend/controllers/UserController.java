@@ -1,7 +1,6 @@
 package br.com.rell.qdele_backend.controllers;
 
 import br.com.rell.qdele_backend.entities.User;
-import br.com.rell.qdele_backend.repositories.UserRepository;
 import br.com.rell.qdele_backend.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

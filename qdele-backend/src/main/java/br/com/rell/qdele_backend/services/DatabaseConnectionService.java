@@ -6,7 +6,6 @@ import br.com.rell.qdele_backend.entities.DatabaseConnection;
 import br.com.rell.qdele_backend.exceptions.NotFoundException;
 import br.com.rell.qdele_backend.mapper.DatabaseConnectionMapper;
 import br.com.rell.qdele_backend.repositories.DatabaseConnectionRepository;
-import br.com.rell.qdele_backend.repositories.DatabaseStructureRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,7 +19,6 @@ import java.util.List;
 public class DatabaseConnectionService {
 
     private final DatabaseConnectionRepository databaseConnectionRepository;
-    private final DatabaseStructureRepository databaseStructureRepository;
 
     public DatabaseConnection findDatabaseConnection(final Long databaseConnectionId) {
         return databaseConnectionRepository.findById(databaseConnectionId)

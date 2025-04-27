@@ -2,7 +2,6 @@ package br.com.rell.qdele_backend.controllers;
 
 import br.com.rell.qdele_backend.services.PromptService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
