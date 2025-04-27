@@ -40,5 +40,18 @@ public class DatabaseConnection {
     private LocalDateTime modifiedDate;
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private Boolean deleted;
+
+    @Column(name = "database_url", nullable = false)
+    private String databaseUrlCompletedUrl;
+
+    @PrePersist
+    public void prePersist() {
+        this.databaseUrlCompletedUrl = this.url + ":" + this.port;
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.databaseUrlCompletedUrl = this.url + ":" + this.port;
+    }
 }
 
