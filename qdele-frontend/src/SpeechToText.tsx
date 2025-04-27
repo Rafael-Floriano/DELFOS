@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Typography } from '@mui/material';
+import httpClient from './services/client/DelfosClient';
 
 declare global {
   interface Window {
@@ -41,16 +42,18 @@ const SpeechToText: React.FC<{ onStart: () => void, onStop: () => void }> = ({ o
   }, [recognition]);
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let interval: ReturnType<typeof setInterval> | undefined;
     if (isRecording) {
       interval = setInterval(() => {
         setTimer((prev) => prev + 1);
       }, 1000);
     } else {
       setTimer(0);
-      clearInterval(interval);
+      if (interval) clearInterval(interval);
     }
-    return () => clearInterval(interval);
+    return () => {
+      if (interval) clearInterval(interval);
+    };
   }, [isRecording]);
 
   
@@ -64,6 +67,20 @@ const SpeechToText: React.FC<{ onStart: () => void, onStop: () => void }> = ({ o
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, [isRecording]);
+
+  const sendTranscriptionToBackend = async (text: string) => {
+    try {
+      await httpClient.post('/prompt?databaseConnectionId=1', text, {
+        headers: {
+          'Content-Type': 'text/plain',
+        },
+      });
+      console.log('Transcription sent to backend successfully');
+    } catch (error) {
+      console.error('Error sending transcription to backend:', error);
+      setErrorMessage('Erro ao enviar transcrição para o servidor.');
+    }
+  };
 
   const startRecording = () => {
     if (recognition) {
@@ -81,6 +98,11 @@ const SpeechToText: React.FC<{ onStart: () => void, onStop: () => void }> = ({ o
       setIsProcessing(true);
       onStop();
       recognition.stop();
+
+      // Send the transcription to the backend
+      if (transcription) {
+        sendTranscriptionToBackend(transcription);
+      }
 
       setTimeout(() => {
         setIsProcessing(false);
