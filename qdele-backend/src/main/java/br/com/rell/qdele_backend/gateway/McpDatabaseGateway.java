@@ -34,10 +34,8 @@ public class McpDatabaseGateway {
             
             log.info("Raw response from MCP: {}", response);
             
-            // Primeira etapa: deserializar o objeto externo
             Map<String, String> outerObject = objectMapper.readValue(response, new TypeReference<Map<String, String>>() {});
             
-            // Segunda etapa: deserializar o JSON dentro do campo "response"
             List<Map<String, Object>> data = objectMapper.readValue(
                 outerObject.get("response"), 
                 new TypeReference<List<Map<String, Object>>>() {}
