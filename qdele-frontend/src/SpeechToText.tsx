@@ -167,14 +167,17 @@ const SpeechToText: React.FC<{ onStart: () => void, onStop: () => void }> = ({ o
         </Box>
       )}
 
-      <Box sx={{ flex: 1, overflow: 'hidden' }}>
-        <QueryResults
-          data={queryResults}
-          columns={columns}
-          isLoading={isLoading}
-          error={errorMessage}
-        />
-      </Box>
+      {!isRecording && (
+        <Box sx={{ flex: 1, overflow: 'hidden' }}>
+          <QueryResults
+            data={queryResults}
+            columns={columns}
+            isLoading={isLoading}
+            error={errorMessage}
+          />
+        </Box>
+      )}
+
     </Box>
   );
 };
