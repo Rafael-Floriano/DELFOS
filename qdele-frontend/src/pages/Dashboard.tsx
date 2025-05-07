@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Sidebar from '../components/SideBar/Sidebar';
 import Workbench from '../components/Workbench/Workbench';
 
-const App: React.FC = () => {
+const Dashboard: React.FC = () => {
     const [drawerWidth, setDrawerWidth] = useState(240);
   
     return (
@@ -13,4 +13,4 @@ const App: React.FC = () => {
     );
   };
 
-export default App;
+export default Dashboard;
