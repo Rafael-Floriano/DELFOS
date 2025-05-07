@@ -152,18 +152,49 @@ const SpeechToText: React.FC<{ onStart: () => void, onStop: () => void }> = ({ o
         <Box
           sx={{
             position: 'fixed',
-            top: '10px',
+            top: '20px',
             right: '20px',
-            backgroundColor: 'red',
-            color: 'white',
-            padding: '5px 15px',
-            borderRadius: '8px',
+            backgroundColor: 'rgba(255, 0, 0, 0.2)',
+            color: '#ff4444',
+            padding: '8px 16px',
+            borderRadius: '12px',
             fontWeight: 'bold',
-            boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.3)',
+            boxShadow: '0px 4px 12px rgba(255, 0, 0, 0.2)',
             zIndex: 1000,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            backdropFilter: 'blur(4px)',
+            border: '1px solid rgba(255, 0, 0, 0.3)',
+            animation: 'pulse 2s infinite',
+            '@keyframes pulse': {
+              '0%': {
+                boxShadow: '0px 4px 12px rgba(255, 0, 0, 0.2)',
+              },
+              '50%': {
+                boxShadow: '0px 4px 20px rgba(255, 0, 0, 0.3)',
+              },
+              '100%': {
+                boxShadow: '0px 4px 12px rgba(255, 0, 0, 0.2)',
+              },
+            },
           }}
         >
-          🎤 Gravando... ({timer}s)
+          <Box
+            sx={{
+              width: '8px',
+              height: '8px',
+              borderRadius: '50%',
+              backgroundColor: '#ff4444',
+              animation: 'blink 1s infinite',
+              '@keyframes blink': {
+                '0%': { opacity: 1 },
+                '50%': { opacity: 0.5 },
+                '100%': { opacity: 1 },
+              },
+            }}
+          />
+          <Typography sx={{ fontSize: '14px' }}>Gravando...</Typography>
         </Box>
       )}
 
