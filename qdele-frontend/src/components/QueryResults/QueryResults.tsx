@@ -42,8 +42,71 @@ const QueryResults: React.FC<QueryResultsProps> = ({
 
   if (!data || data.length === 0) {
     return (
-      <Box sx={{ p: 2, color: 'white' }}>
-        <Typography>Nenhum resultado encontrado.</Typography>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: '100vh',
+          width: '100%',
+          gap: 2,
+          color: 'white',
+          backgroundColor: '#1e1e1e',
+          position: 'fixed',
+          top: 0,
+          left: 0,
+        }}
+      >
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: 1,
+            p: 4,
+            borderRadius: 2,
+            backgroundColor: 'rgba(45, 45, 45, 0.5)',
+            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+            maxWidth: '500px',
+            width: '100%',
+          }}
+        >
+          <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 2 }}>
+            Nenhum resultado encontrado
+          </Typography>
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1,
+              p: 1.5,
+              borderRadius: 1,
+              backgroundColor: 'rgba(255, 255, 255, 0.1)',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+            }}
+          >
+            <Typography variant="body1" sx={{ color: '#90caf9' }}>
+              Pressione
+            </Typography>
+            <Box
+              sx={{
+                px: 1.5,
+                py: 0.5,
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                borderRadius: 1,
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+              }}
+            >
+              <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+                V
+              </Typography>
+            </Box>
+            <Typography variant="body1" sx={{ color: '#90caf9' }}>
+              para falar com o agente
+            </Typography>
+          </Box>
+        </Box>
       </Box>
     );
   }
