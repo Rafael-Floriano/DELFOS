@@ -10,9 +10,11 @@ import {
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 const Register: React.FC = () => {
   const navigate = useNavigate();
+  const { register } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -20,6 +22,8 @@ const Register: React.FC = () => {
     password: '',
     confirmPassword: '',
   });
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -31,9 +35,19 @@ const Register: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implementar a lógica de cadastro aqui
-    // Por enquanto, vamos apenas redirecionar para o login
-    navigate('/login');
+    setError(null);
+    if (formData.password !== formData.confirmPassword) {
+      setError('As senhas não coincidem.');
+      return;
+    }
+    setIsLoading(true);
+    try {
+      await register(formData.username, formData.password);
+    } catch (err) {
+      setError('Erro ao cadastrar. Tente outro nome de usuário.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
