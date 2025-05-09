@@ -6,65 +6,42 @@ import Dashboard from './pages/Dashboard';
 import Details from './pages/Details';
 import './App.css';
 import { createTheme, CssBaseline, ThemeProvider } from '@mui/material';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+
+// Componente para proteger rotas
+const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { isAuthenticated } = useAuth();
+  return isAuthenticated ? <>{children}</> : <Navigate to="/login" />;
+};
 
 const App: React.FC = () => {
-  // TODO: Implementar verificação de autenticação
-  const isAuthenticated = true; // Temporariamente true para permitir acesso ao dashboard
-
   // Criando um tema escuro
   const theme = createTheme({
     palette: {
-      mode: 'dark',  // Definindo o modo para escuro
+      mode: 'dark',
       background: {
-        default: '#121212',  // Cor do fundo da página
-        paper: '#1d1d1d',  // Cor do fundo dos componentes, como cards
+        default: '#121212',
+        paper: '#1d1d1d',
       },
       primary: {
-        main: '#90caf9',  // Cor principal (botões, links, etc.)
+        main: '#90caf9',
       },
       secondary: {
-        main: '#9c27b0', // Roxo mais vibrante
+        main: '#9c27b0',
       },
       text: {
-        primary: '#e0e0e0',  // Cor do texto principal
-        secondary: '#b0b0b0',  // Cor do texto secundário
+        primary: '#e0e0e0',
+        secondary: '#b0b0b0',
       },
     },
     typography: {
       fontFamily: '"Afacad", sans-serif',
-      h1: {
-        fontFamily: '"Afacad", sans-serif',
-      },
-      h2: {
-        fontFamily: '"Afacad", sans-serif',
-      },
-      h3: {
-        fontFamily: '"Afacad", sans-serif',
-      },
-      h4: {
-        fontFamily: '"Afacad", sans-serif',
-      },
-      h5: {
-        fontFamily: '"Afacad", sans-serif',
-      },
-      h6: {
-        fontFamily: '"Afacad", sans-serif',
-      },
-      body1: {
-        fontFamily: '"Afacad", sans-serif',
-      },
-      body2: {
-        fontFamily: '"Afacad", sans-serif',
-      },
-      button: {
-        fontFamily: '"Afacad", sans-serif',
-      },
     },
     components: {
       MuiButton: {
         styleOverrides: {
           root: {
-            borderRadius: '4px',  // Ajustando o border-radius dos botões
+            borderRadius: '4px',
           },
         },
       },
@@ -73,20 +50,19 @@ const App: React.FC = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <CssBaseline />  {/* Reseta o estilo padrão do navegador para aplicar o tema */}
+      <CssBaseline />
       <Router>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/details" element={<Details />} />
-          <Route
-            path="/dashboard"
-            element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />}
-          />
-          <Route path="/" element={<Navigate to="/dashboard" />} />
-        </Routes>
+        <AuthProvider>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/details" element={<ProtectedRoute><Details /></ProtectedRoute>} />
+            <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+            <Route path="/" element={<Navigate to="/dashboard" />} />
+          </Routes>
+        </AuthProvider>
       </Router>
-    </ThemeProvider>  
+    </ThemeProvider>
   );
 };
 
