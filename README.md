@@ -1,6 +1,9 @@
-# QDele
+# Delfos
 
-QDele é uma aplicação web moderna que combina um frontend em React com um backend em Spring Boot com integração a um MCP server para realizar consultas no banco de dados via voz.
+Delfos é uma aplicação web moderna que combina um frontend em React com um backend em Spring Boot com integração a um MCP server para realizar consultas no banco de dados via voz.
+
+![image](https://github.com/user-attachments/assets/7dfb9c57-cc9c-47da-bcce-acc292016faa)
+
 
 ## 🚀 Tecnologias
 
