@@ -7,6 +7,7 @@ import Details from './pages/Details';
 import './App.css';
 import { createTheme, CssBaseline, ThemeProvider } from '@mui/material';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { ErrorProvider } from './contexts/ErrorContext';
 
 // Componente para proteger rotas
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -52,15 +53,17 @@ const App: React.FC = () => {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Router>
-        <AuthProvider>
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/details" element={<ProtectedRoute><Details /></ProtectedRoute>} />
-            <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-            <Route path="/" element={<Navigate to="/dashboard" />} />
-          </Routes>
-        </AuthProvider>
+        <ErrorProvider>
+          <AuthProvider>
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/details" element={<ProtectedRoute><Details /></ProtectedRoute>} />
+              <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+              <Route path="/" element={<Navigate to="/dashboard" />} />
+            </Routes>
+          </AuthProvider>
+        </ErrorProvider>
       </Router>
     </ThemeProvider>
   );
