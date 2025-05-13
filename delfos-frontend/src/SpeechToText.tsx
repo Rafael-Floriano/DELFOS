@@ -10,6 +10,14 @@ declare global {
   }
 }
 
+const loadingMessages = [
+  'Buscando informações...',
+  'Consultando banco de dados...',
+  'Analisando sua pergunta...',
+  'Processando dados...',
+  'Aguarde um momento...'
+];
+
 const SpeechToText: React.FC<{ onStart: () => void, onStop: () => void }> = ({ onStart, onStop }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -19,6 +27,7 @@ const SpeechToText: React.FC<{ onStart: () => void, onStop: () => void }> = ({ o
   const [queryResults, setQueryResults] = useState<any[]>([]);
   const [columns, setColumns] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingMessageIndex, setLoadingMessageIndex] = useState(0);
 
   const recognition =
     typeof window.SpeechRecognition !== 'undefined'
@@ -71,6 +80,21 @@ const SpeechToText: React.FC<{ onStart: () => void, onStop: () => void }> = ({ o
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, [isRecording]);
+
+  useEffect(() => {
+    let interval: ReturnType<typeof setInterval> | undefined;
+    if (isProcessing) {
+      interval = setInterval(() => {
+        setLoadingMessageIndex((prev) => (prev + 1) % loadingMessages.length);
+      }, 1500);
+    } else {
+      setLoadingMessageIndex(0);
+      if (interval) clearInterval(interval);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isProcessing]);
 
   const sendTranscriptionToBackend = async (text: string) => {
     try {
@@ -204,7 +228,57 @@ const SpeechToText: React.FC<{ onStart: () => void, onStop: () => void }> = ({ o
         </Box>
       )}
 
-      {!isRecording && (
+      {isProcessing && (
+        <Box
+          sx={{
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            zIndex: 1200,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'rgba(30,30,30,0.95)',
+            borderRadius: 4,
+            p: 4,
+            minWidth: 320,
+            minHeight: 120,
+            boxShadow: '0 4px 32px #000a',
+          }}
+        >
+          <Box
+            sx={{
+              width: 36,
+              height: 36,
+              borderRadius: '50%',
+              border: '4px solid #9c27b0',
+              borderTop: '4px solid transparent',
+              animation: 'spin 1s linear infinite',
+              mb: 3,
+              '@keyframes spin': {
+                '0%': { transform: 'rotate(0deg)' },
+                '100%': { transform: 'rotate(360deg)' },
+              },
+            }}
+          />
+          <Typography
+            sx={{
+              color: '#fff',
+              fontSize: '1.2rem',
+              textAlign: 'center',
+              mt: 1,
+              fontWeight: 500,
+              letterSpacing: 0.5,
+            }}
+          >
+            {loadingMessages[loadingMessageIndex]}
+          </Typography>
+        </Box>
+      )}
+
+      {(!isRecording && !isProcessing) && (
         <Box sx={{ flex: 1, overflow: 'hidden' }}>
           <QueryResults
             data={queryResults}
