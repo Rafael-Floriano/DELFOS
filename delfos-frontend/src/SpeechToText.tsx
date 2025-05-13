@@ -152,49 +152,55 @@ const SpeechToText: React.FC<{ onStart: () => void, onStop: () => void }> = ({ o
         <Box
           sx={{
             position: 'fixed',
-            top: '20px',
-            right: '20px',
-            backgroundColor: 'rgba(255, 0, 0, 0.2)',
-            color: '#ff4444',
-            padding: '8px 16px',
-            borderRadius: '12px',
-            fontWeight: 'bold',
-            boxShadow: '0px 4px 12px rgba(255, 0, 0, 0.2)',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
             zIndex: 1000,
             display: 'flex',
+            flexDirection: 'column',
             alignItems: 'center',
-            gap: '8px',
-            backdropFilter: 'blur(4px)',
-            border: '1px solid rgba(255, 0, 0, 0.3)',
-            animation: 'pulse 2s infinite',
-            '@keyframes pulse': {
-              '0%': {
-                boxShadow: '0px 4px 12px rgba(255, 0, 0, 0.2)',
-              },
-              '50%': {
-                boxShadow: '0px 4px 20px rgba(255, 0, 0, 0.3)',
-              },
-              '100%': {
-                boxShadow: '0px 4px 12px rgba(255, 0, 0, 0.2)',
-              },
-            },
+            justifyContent: 'center',
           }}
         >
           <Box
             sx={{
-              width: '8px',
-              height: '8px',
+              width: 32,
+              height: 32,
               borderRadius: '50%',
               backgroundColor: '#ff4444',
-              animation: 'blink 1s infinite',
-              '@keyframes blink': {
-                '0%': { opacity: 1 },
-                '50%': { opacity: 0.5 },
-                '100%': { opacity: 1 },
+              animation: 'pulse 1.2s infinite',
+              boxShadow: '0 0 0 0 rgba(255,68,68,0.7)',
+              '@keyframes pulse': {
+                '0%': {
+                  transform: 'scale(1)',
+                  boxShadow: '0 0 0 0 rgba(255,68,68,0.7)',
+                },
+                '50%': {
+                  transform: 'scale(1.3)',
+                  boxShadow: '0 0 0 12px rgba(255,68,68,0.1)',
+                },
+                '100%': {
+                  transform: 'scale(1)',
+                  boxShadow: '0 0 0 0 rgba(255,68,68,0.7)',
+                },
               },
             }}
           />
-          <Typography sx={{ fontSize: '14px' }}>Gravando...</Typography>
+          {transcription && (
+            <Typography
+              sx={{
+                color: '#fff',
+                marginTop: 2,
+                fontSize: '1.2rem',
+                textAlign: 'center',
+                maxWidth: 400,
+                textShadow: '0 2px 8px #000',
+                wordBreak: 'break-word',
+              }}
+            >
+              {transcription}
+            </Typography>
+          )}
         </Box>
       )}
 
