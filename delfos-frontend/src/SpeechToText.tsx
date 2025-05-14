@@ -103,9 +103,11 @@ const SpeechToText: React.FC<{ onStart: () => void, onStop: () => void }> = ({ o
   
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
-      if (event.key.toLowerCase() === 'v') {
-        isRecording ? stopRecording() : startRecording();
-      } else if (event.key.toLowerCase() === 't') {
+      // if (event.key.toLowerCase() === 'v') {
+      //   isRecording ? stopRecording() : startRecording();
+      // } else
+      
+      if (event.key.toLowerCase() === 't') {
         setShowTextInputModal(true);
       }
     };
@@ -141,7 +143,10 @@ const SpeechToText: React.FC<{ onStart: () => void, onStop: () => void }> = ({ o
       if (response.data && response.data.response && Array.isArray(response.data.response)) {
         const results = response.data.response;
         if (results.length > 0) {
-          setColumns(Object.keys(results[0]));
+          // Get columns from the first result object
+          const firstResult = results[0];
+          const columns = Object.keys(firstResult);
+          setColumns(columns);
           setQueryResults(results);
         } else {
           setQueryResults([]);
@@ -191,16 +196,36 @@ const SpeechToText: React.FC<{ onStart: () => void, onStop: () => void }> = ({ o
   };
 
   function exportToCSV() {
+    if (queryResults.length === 0) {
+      setErrorMessage('Não há dados para exportar.');
+      return;
+    }
+
     const csvRows = [
-      ['Número da Venda', 'Nome do Cliente', 'Total da Venda', 'Produtos Comprados'],
-      ...mockSales.map(row => [row.numero, row.cliente, row.total, row.produtos])
+      columns, // Header row
+      ...queryResults.map(row => 
+        columns.map(column => {
+          const value = row[column];
+          // Handle values that might contain commas or quotes
+          if (value !== null && value !== undefined) {
+            const stringValue = String(value);
+            if (stringValue.includes(',') || stringValue.includes('"')) {
+              return `"${stringValue.replace(/"/g, '""')}"`;
+            }
+            return stringValue;
+          }
+          return '';
+        })
+      )
     ];
-    const csvContent = csvRows.map(e => e.join(',')).join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv' });
+
+    const csvContent = csvRows.map(row => row.join(',')).join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     a.href = url;
-    a.download = 'vendas.csv';
+    a.download = `consulta-${timestamp}.csv`;
     a.click();
     URL.revokeObjectURL(url);
   }
