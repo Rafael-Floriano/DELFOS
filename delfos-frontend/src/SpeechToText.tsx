@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from '@mui/material';
 import httpClient from './services/client/DelfosClient';
 import QueryResults from './components/QueryResults/QueryResults';
 
@@ -18,6 +18,33 @@ const loadingMessages = [
   'Aguarde um momento...'
 ];
 
+const mockSales = [
+  {
+    numero: '001',
+    cliente: 'João Silva',
+    total: 'R$ 1.200,00',
+    produtos: 'Notebook, Mouse',
+  },
+  {
+    numero: '002',
+    cliente: 'Maria Souza',
+    total: 'R$ 350,00',
+    produtos: 'Teclado, Mousepad',
+  },
+  {
+    numero: '003',
+    cliente: 'Carlos Lima',
+    total: 'R$ 2.500,00',
+    produtos: 'Monitor, Headset, Webcam',
+  },
+  {
+    numero: '004',
+    cliente: 'Ana Paula',
+    total: 'R$ 800,00',
+    produtos: 'Impressora',
+  },
+];
+
 const SpeechToText: React.FC<{ onStart: () => void, onStop: () => void }> = ({ onStart, onStop }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -28,6 +55,10 @@ const SpeechToText: React.FC<{ onStart: () => void, onStop: () => void }> = ({ o
   const [columns, setColumns] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [loadingMessageIndex, setLoadingMessageIndex] = useState(0);
+  const [showRequestModal, setShowRequestModal] = useState(false);
+  const [showTextInputModal, setShowTextInputModal] = useState(false);
+  const [textInput, setTextInput] = useState('');
+  const connectionName = 'conexao-teste'; // mock, pode ser dinâmico depois
 
   const recognition =
     typeof window.SpeechRecognition !== 'undefined'
@@ -74,6 +105,8 @@ const SpeechToText: React.FC<{ onStart: () => void, onStop: () => void }> = ({ o
     const handleKeyPress = (event: KeyboardEvent) => {
       if (event.key.toLowerCase() === 'v') {
         isRecording ? stopRecording() : startRecording();
+      } else if (event.key.toLowerCase() === 't') {
+        setShowTextInputModal(true);
       }
     };
 
@@ -151,6 +184,33 @@ const SpeechToText: React.FC<{ onStart: () => void, onStop: () => void }> = ({ o
         sendTranscriptionToBackend(transcription);
       }
 
+      setTimeout(() => {
+        setIsProcessing(false);
+      }, 3000);
+    }
+  };
+
+  function exportToCSV() {
+    const csvRows = [
+      ['Número da Venda', 'Nome do Cliente', 'Total da Venda', 'Produtos Comprados'],
+      ...mockSales.map(row => [row.numero, row.cliente, row.total, row.produtos])
+    ];
+    const csvContent = csvRows.map(e => e.join(',')).join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'vendas.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  const handleTextSubmit = () => {
+    if (textInput.trim()) {
+      setIsProcessing(true);
+      sendTranscriptionToBackend(textInput);
+      setShowTextInputModal(false);
+      setTextInput('');
       setTimeout(() => {
         setIsProcessing(false);
       }, 3000);
@@ -279,13 +339,215 @@ const SpeechToText: React.FC<{ onStart: () => void, onStop: () => void }> = ({ o
       )}
 
       {(!isRecording && !isProcessing) && (
-        <Box sx={{ flex: 1, overflow: 'hidden' }}>
-          <QueryResults
-            data={queryResults}
-            columns={columns}
-            isLoading={isLoading}
-            error={errorMessage}
-          />
+        <Box sx={{
+          flex: 1,
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          background: 'transparent',
+          p: 0,
+          boxSizing: 'border-box',
+        }}>
+          <Paper elevation={3} sx={{
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            borderRadius: 3,
+            overflow: 'hidden',
+            background: '#23232b',
+          }}>
+            <Box sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              px: 3,
+              py: 2,
+              borderBottom: '1px solid #333',
+              background: '#23232b',
+            }}>
+              <Typography sx={{ color: '#fff', fontWeight: 700, fontSize: '1.2rem', letterSpacing: 1 }}>
+                Conexão: {connectionName}
+              </Typography>
+              <Box sx={{ display: 'flex', gap: 2 }}>
+                <Button
+                  variant="outlined"
+                  sx={{ color: '#fff', borderColor: '#9c27b0', '&:hover': { borderColor: '#7b1fa2', background: 'rgba(156,39,176,0.08)' } }}
+                  onClick={exportToCSV}
+                >
+                  Exportar CSV
+                </Button>
+                <Button
+                  variant="contained"
+                  sx={{ background: '#9c27b0', color: '#fff', fontWeight: 600, '&:hover': { background: '#7b1fa2' } }}
+                  onClick={() => setShowRequestModal(true)}
+                >
+                  Ver Solicitação
+                </Button>
+                <Button
+                  variant="contained"
+                  sx={{ background: '#90caf9', color: '#23232b', fontWeight: 600, '&:hover': { background: '#5fa8d3' } }}
+                  onClick={() => setShowTextInputModal(true)}
+                >
+                  Texto (T)
+                </Button>
+                <Button
+                  variant="contained"
+                  sx={{ background: '#90caf9', color: '#23232b', fontWeight: 600, '&:hover': { background: '#5fa8d3' } }}
+                  onClick={() => {
+                    if (isRecording) {
+                      stopRecording();
+                    } else {
+                      startRecording();
+                    }
+                  }}
+                >
+                  Voz (V)
+                </Button>
+              </Box>
+            </Box>
+            <TableContainer sx={{ flex: 1, width: '100%', height: '100%', background: 'transparent' }}>
+              <Table 
+                sx={{ width: '100%', height: '100%', tableLayout: 'fixed' }} 
+                aria-label="tabela de resultados"
+              >
+                <caption style={{
+                  captionSide: 'top',
+                  color: '#fff',
+                  fontWeight: 700,
+                  fontSize: '1.3rem',
+                  padding: '16px',
+                  background: '#23232b',
+                  textAlign: 'left',
+                  letterSpacing: 1,
+                }}>
+                  Resultados da Consulta
+                </caption>
+                <TableHead>
+                  <TableRow>
+                    {columns.map((column, index) => (
+                      <TableCell 
+                        key={index}
+                        sx={{ 
+                          color: '#fff', 
+                          fontWeight: 'bold', 
+                          fontSize: '1.1rem', 
+                          borderBottom: '2px solid #444',
+                          width: `${100 / columns.length}%`
+                        }}
+                      >
+                        {column}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {queryResults.length > 0 ? (
+                    queryResults.map((row, idx) => (
+                      <TableRow key={idx} sx={{ '&:nth-of-type(odd)': { backgroundColor: '#282830' } }}>
+                        {columns.map((column, colIdx) => (
+                          <TableCell 
+                            key={colIdx}
+                            sx={{ 
+                              color: '#fff', 
+                              fontSize: '1rem', 
+                              borderBottom: '1px solid #333',
+                              width: `${100 / columns.length}%`
+                            }}
+                          >
+                            {row[column]}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell 
+                        colSpan={columns.length} 
+                        sx={{ 
+                          color: '#fff', 
+                          textAlign: 'center', 
+                          py: 4,
+                          fontSize: '1.1rem'
+                        }}
+                      >
+                        {isLoading ? 'Carregando resultados...' : 'Nenhum resultado encontrado'}
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Paper>
+
+          {/* Text Input Dialog */}
+          <Dialog 
+            open={showTextInputModal} 
+            onClose={() => setShowTextInputModal(false)}
+            maxWidth="md"
+            fullWidth
+          >
+            <DialogTitle sx={{ background: '#23232b', color: '#fff' }}>
+              Digite sua consulta
+            </DialogTitle>
+            <DialogContent sx={{ background: '#23232b', pt: 2 }}>
+              <TextField
+                fullWidth
+                multiline
+                rows={4}
+                value={textInput}
+                onChange={(e) => setTextInput(e.target.value)}
+                placeholder="Digite sua consulta aqui..."
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    color: '#fff',
+                    '& fieldset': {
+                      borderColor: '#444',
+                    },
+                    '&:hover fieldset': {
+                      borderColor: '#666',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: '#9c27b0',
+                    },
+                  },
+                  '& .MuiInputLabel-root': {
+                    color: '#fff',
+                  },
+                }}
+              />
+            </DialogContent>
+            <DialogActions sx={{ background: '#23232b', px: 3, py: 2 }}>
+              <Button 
+                onClick={() => setShowTextInputModal(false)}
+                sx={{ color: '#fff' }}
+              >
+                Cancelar
+              </Button>
+              <Button 
+                onClick={handleTextSubmit}
+                variant="contained"
+                sx={{ 
+                  background: '#9c27b0',
+                  color: '#fff',
+                  '&:hover': { background: '#7b1fa2' }
+                }}
+              >
+                Enviar
+              </Button>
+            </DialogActions>
+          </Dialog>
+
+          <Dialog open={showRequestModal} onClose={() => setShowRequestModal(false)}>
+            <DialogTitle>Solicitação de Áudio</DialogTitle>
+            <DialogContent>
+              <Typography sx={{ whiteSpace: 'pre-line' }}>{transcription || 'Nenhuma solicitação disponível.'}</Typography>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setShowRequestModal(false)}>Fechar</Button>
+            </DialogActions>
+          </Dialog>
         </Box>
       )}
 
