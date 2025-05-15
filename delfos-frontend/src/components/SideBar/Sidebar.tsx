@@ -74,6 +74,7 @@ const Sidebar: React.FC<SidebarProps> = ({ drawerWidth, setDrawerWidth }) => {
 
   const handleSaveConnection = (data: any) => {
     setIsModalOpen(false);
+    fetchConnections();
   };
 
   const handleRightClickConnectionLabel = (connectionLabelNumber: number) => {
@@ -86,21 +87,20 @@ const Sidebar: React.FC<SidebarProps> = ({ drawerWidth, setDrawerWidth }) => {
     setContextMenu(null);
   }
 
-  useEffect(() => {
-    const fetchConnections = async () => {
-      try {
-        const connections:DatabaseConnectionLabel[] = await getAllConnectionLabels();
-        const connectionsWithIcons = connections.map(conn => ({
-          ...conn,
-          iconSrc: "/icons/database/postgresql-logo-svgrepo-com.svg"
-        }));
-        setConnectionLabels(connectionsWithIcons);
-        console.log("getAllConnections - ", connectionLabels);
-      } catch (error) {
-        console.error("Erro ao buscar conexões:", error);
-      }
-    };
+  const fetchConnections = async () => {
+    try {
+      const connections:DatabaseConnectionLabel[] = await getAllConnectionLabels();
+      const connectionsWithIcons = connections.map(conn => ({
+        ...conn,
+        iconSrc: "/icons/database/postgresql-logo-svgrepo-com.svg"
+      }));
+      setConnectionLabels(connectionsWithIcons);
+    } catch (error) {
+      console.error("Erro ao buscar conexões:", error);
+    }
+  };
 
+  useEffect(() => {
     fetchConnections();
   }, []);
 
