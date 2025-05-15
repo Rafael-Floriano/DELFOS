@@ -32,4 +32,12 @@ import {
     onEdit: (dbName: string) => void;
   }
   
+  export interface ConnectionModalProps {
+    open: boolean;
+    onClose: (success: boolean) => void;
+    onSave: (success: boolean) => void;
+    initialData: ConnectionData | null;
+    edit: boolean;
+  }
+  
   
