@@ -56,7 +56,7 @@ const ConnectionModal: React.FC<ConnectionModalProps> = ({
       const payload = {
         name: formData.name,
         host: formData.host,
-        port: Number(formData.port),
+        port: parseInt(formData.port),
         database: formData.database,
         username: formData.user,
         password: formData.password,
@@ -70,9 +70,10 @@ const ConnectionModal: React.FC<ConnectionModalProps> = ({
       }
 
       handleClose();
-      onClose(true);
+      onSave(true);
     } catch (error) {
       console.error("Erro ao salvar conexão:", error);
+      onSave(false);
     }
   };
 
