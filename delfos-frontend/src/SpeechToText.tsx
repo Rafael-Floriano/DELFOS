@@ -58,6 +58,7 @@ const SpeechToText: React.FC<{ onStart: () => void, onStop: () => void }> = ({ o
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [showTextInputModal, setShowTextInputModal] = useState(false);
   const [textInput, setTextInput] = useState('');
+  const [lastRequest, setLastRequest] = useState<string>('');
   const connectionName = 'conexao-teste'; // mock, pode ser dinâmico depois
 
   const recognition =
@@ -186,6 +187,7 @@ const SpeechToText: React.FC<{ onStart: () => void, onStop: () => void }> = ({ o
 
       // Send the transcription to the backend
       if (transcription) {
+        setLastRequest(transcription);
         sendTranscriptionToBackend(transcription);
       }
 
@@ -233,6 +235,7 @@ const SpeechToText: React.FC<{ onStart: () => void, onStop: () => void }> = ({ o
   const handleTextSubmit = () => {
     if (textInput.trim()) {
       setIsProcessing(true);
+      setLastRequest(textInput);
       sendTranscriptionToBackend(textInput);
       setShowTextInputModal(false);
       setTextInput('');
@@ -564,13 +567,34 @@ const SpeechToText: React.FC<{ onStart: () => void, onStop: () => void }> = ({ o
             </DialogActions>
           </Dialog>
 
-          <Dialog open={showRequestModal} onClose={() => setShowRequestModal(false)}>
-            <DialogTitle>Solicitação de Áudio</DialogTitle>
-            <DialogContent>
-              <Typography sx={{ whiteSpace: 'pre-line' }}>{transcription || 'Nenhuma solicitação disponível.'}</Typography>
+          <Dialog 
+            open={showRequestModal} 
+            onClose={() => setShowRequestModal(false)}
+            maxWidth="md"
+            fullWidth
+          >
+            <DialogTitle sx={{ background: '#23232b', color: '#fff' }}>
+              Solicitação
+            </DialogTitle>
+            <DialogContent sx={{ background: '#23232b', pt: 2 }}>
+              <Typography 
+                sx={{ 
+                  whiteSpace: 'pre-line',
+                  color: '#fff',
+                  fontSize: '1.1rem',
+                  lineHeight: '1.6'
+                }}
+              >
+                {lastRequest || 'Nenhuma solicitação disponível.'}
+              </Typography>
             </DialogContent>
-            <DialogActions>
-              <Button onClick={() => setShowRequestModal(false)}>Fechar</Button>
+            <DialogActions sx={{ background: '#23232b', px: 3, py: 2 }}>
+              <Button 
+                onClick={() => setShowRequestModal(false)}
+                sx={{ color: '#fff' }}
+              >
+                Fechar
+              </Button>
             </DialogActions>
           </Dialog>
         </Box>
