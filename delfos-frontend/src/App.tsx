@@ -4,6 +4,8 @@ import Login from './components/Login/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Details from './pages/Details';
+import UserManagement from './pages/UserManagement';
+import Layout from './components/Layout/Layout';
 import './App.css';
 import { createTheme, CssBaseline, ThemeProvider } from '@mui/material';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
@@ -58,8 +60,9 @@ const App: React.FC = () => {
             <Routes>
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
-              <Route path="/details" element={<ProtectedRoute><Details /></ProtectedRoute>} />
-              <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+              <Route path="/details" element={<ProtectedRoute><Layout><Details /></Layout></ProtectedRoute>} />
+              <Route path="/dashboard" element={<ProtectedRoute><Layout><Dashboard /></Layout></ProtectedRoute>} />
+              <Route path="/user-management" element={<ProtectedRoute><Layout><UserManagement /></Layout></ProtectedRoute>} />
               <Route path="/" element={<Navigate to="/dashboard" />} />
             </Routes>
           </AuthProvider>
