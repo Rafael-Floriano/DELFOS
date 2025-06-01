@@ -1,6 +1,12 @@
 import httpClient from './client/DelfosClient';
 import { Permission, PermissionGroup, User } from '../types/UserManagement';
 
+interface CreateUserDTO {
+  username: string;
+  password: string;
+  permissionGroupIds: number[];
+}
+
 // Permissions
 export const getPermissions = async (): Promise<Permission[]> => {
   const response = await httpClient.get('/api/permissions');
@@ -67,7 +73,7 @@ export const getUserByUsername = async (username: string): Promise<User> => {
   return response.data;
 };
 
-export const createUser = async (user: Omit<User, 'id'>): Promise<User> => {
+export const createUser = async (user: CreateUserDTO): Promise<User> => {
   const response = await httpClient.post('/api/users', user);
   return response.data;
 };
