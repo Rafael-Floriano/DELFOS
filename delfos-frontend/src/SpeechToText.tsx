@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from '@mui/material';
 import httpClient from './services/client/DelfosClient';
 import QueryResults from './components/QueryResults/QueryResults';
+import { DatabaseConnectionLabel } from './services/types/DatabaseConnectionLabel';
 
 declare global {
   interface Window {
@@ -45,7 +46,11 @@ const mockSales = [
   },
 ];
 
-const SpeechToText: React.FC<{ onStart: () => void, onStop: () => void }> = ({ onStart, onStop }) => {
+const SpeechToText: React.FC<{ 
+  onStart: () => void, 
+  onStop: () => void,
+  selectedConnection: DatabaseConnectionLabel | null 
+}> = ({ onStart, onStop, selectedConnection }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [transcription, setTranscription] = useState('');
@@ -396,7 +401,7 @@ const SpeechToText: React.FC<{ onStart: () => void, onStop: () => void }> = ({ o
               background: '#23232b',
             }}>
               <Typography sx={{ color: '#fff', fontWeight: 700, fontSize: '1.2rem', letterSpacing: 1 }}>
-                Conexão: {connectionName}
+                Conexão: {selectedConnection ? selectedConnection.label : 'nenhuma conexão selecionada'}
               </Typography>
               <Box sx={{ display: 'flex', gap: 2 }}>
                 <Button
