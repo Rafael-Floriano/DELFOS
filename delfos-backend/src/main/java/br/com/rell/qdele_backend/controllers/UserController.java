@@ -1,6 +1,7 @@
 package br.com.rell.qdele_backend.controllers;
 
 import br.com.rell.qdele_backend.dto.CreateUserRequest;
+import br.com.rell.qdele_backend.dto.UpdateUserRequest;
 import br.com.rell.qdele_backend.dto.UserDTO;
 import br.com.rell.qdele_backend.services.UserService;
 import lombok.RequiredArgsConstructor;
@@ -31,8 +32,8 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserDTO> updateUser(@PathVariable Long id, @RequestBody UserDTO userDTO) {
-        return ResponseEntity.ok(userService.updateUser(id, userDTO));
+    public ResponseEntity<UserDTO> updateUser(@PathVariable Long id, @RequestBody UpdateUserRequest request) {
+        return ResponseEntity.ok(userService.updateUser(id, request));
     }
 
     @DeleteMapping("/{id}")
