@@ -3,6 +3,7 @@ package br.com.rell.qdele_backend.services;
 import br.com.rell.qdele_backend.dto.CreateUserRequest;
 import br.com.rell.qdele_backend.dto.PermissionDTO;
 import br.com.rell.qdele_backend.dto.PermissionGroupDTO;
+import br.com.rell.qdele_backend.dto.UpdateUserRequest;
 import br.com.rell.qdele_backend.dto.UserDTO;
 import br.com.rell.qdele_backend.entities.PermissionGroup;
 import br.com.rell.qdele_backend.entities.User;
@@ -66,19 +67,28 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
-    public UserDTO updateUser(Long id, UserDTO userDTO) {
+    @Transactional(rollbackFor = Exception.class)
+    public UserDTO updateUser(Long id, UpdateUserRequest request) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        user.setUsername(userDTO.getUsername());
-        if (userDTO.getPassword() != null && !userDTO.getPassword().isEmpty()) {
-            user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+        if (request.getUsername() != null && !request.getUsername().trim().isEmpty()) {
+            // Verifica se o novo username já existe (se for diferente do atual)
+            if (!request.getUsername().equals(user.getUsername()) && 
+                userRepository.existsByUsername(request.getUsername())) {
+                throw new IllegalArgumentException("Username already exists");
+            }
+            user.setUsername(request.getUsername().trim());
+        }
+
+        if (request.getPassword() != null && !request.getPassword().trim().isEmpty()) {
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
         }
         
-        if (userDTO.getPermissionGroups() != null) {
-            Set<PermissionGroup> groups = userDTO.getPermissionGroups().stream()
-                    .map(g -> permissionGroupRepository.findById(g.getId())
-                            .orElseThrow(() -> new RuntimeException("Permission group not found: " + g.getId())))
+        if (request.getPermissionGroupIds() != null) {
+            Set<PermissionGroup> groups = request.getPermissionGroupIds().stream()
+                    .map(groupId -> permissionGroupRepository.findById(groupId)
+                            .orElseThrow(() -> new RuntimeException("Permission group not found: " + groupId)))
                     .collect(Collectors.toSet());
             user.setPermissionGroups(groups);
         }
