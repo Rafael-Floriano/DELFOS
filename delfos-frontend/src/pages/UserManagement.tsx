@@ -19,6 +19,10 @@ import {
   Chip,
   Grid,
   InputAdornment,
+  Card,
+  CardContent,
+  Divider,
+  useTheme,
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -26,6 +30,8 @@ import {
   Edit as EditIcon,
   Delete as DeleteIcon,
   Group as GroupIcon,
+  People as PeopleIcon,
+  Security as SecurityIcon,
 } from '@mui/icons-material';
 import UserForm from '../components/UserManagement/UserForm';
 import GroupForm from '../components/UserManagement/GroupForm';
@@ -55,6 +61,7 @@ const defaultPermissions: Permission[] = [
 ];
 
 const UserManagement: React.FC = () => {
+  const theme = useTheme();
   const [users, setUsers] = useState<User[]>([]);
   const [groups, setGroups] = useState<PermissionGroup[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -170,18 +177,43 @@ const UserManagement: React.FC = () => {
   );
 
   return (
-    <Box sx={{ p: 3 }}>
+    <Box sx={{ p: 3, maxWidth: '1400px', margin: '0 auto' }}>
       <Grid container spacing={3}>
         <Grid item xs={12}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
-            <Typography variant="h4" component="h1" gutterBottom>
-              Gerenciamento de Usuários
-            </Typography>
+          <Box sx={{ 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'center',
+            mb: 2,
+            backgroundColor: theme.palette.background.paper,
+            p: 3,
+            borderRadius: 1,
+            boxShadow: theme.shadows[1],
+          }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <PeopleIcon sx={{ fontSize: 40, color: theme.palette.primary.main }} />
+              <Box>
+                <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 600 }}>
+                  Gerenciamento de Usuários
+                </Typography>
+                <Typography variant="body1" color="text.secondary">
+                  Gerencie usuários, grupos e permissões do sistema
+                </Typography>
+              </Box>
+            </Box>
             <Box sx={{ display: 'flex', gap: 2 }}>
               <Button
-                variant="contained"
+                variant="outlined"
                 startIcon={<GroupIcon />}
                 onClick={handleCreateGroup}
+                sx={{
+                  borderColor: theme.palette.secondary.main,
+                  color: theme.palette.secondary.main,
+                  '&:hover': {
+                    borderColor: theme.palette.secondary.dark,
+                    backgroundColor: 'rgba(156,39,176,0.08)',
+                  },
+                }}
               >
                 Novo Grupo
               </Button>
@@ -189,6 +221,12 @@ const UserManagement: React.FC = () => {
                 variant="contained"
                 startIcon={<AddIcon />}
                 onClick={handleCreateUser}
+                sx={{
+                  backgroundColor: theme.palette.primary.main,
+                  '&:hover': {
+                    backgroundColor: theme.palette.primary.dark,
+                  },
+                }}
               >
                 Novo Usuário
               </Button>
@@ -197,90 +235,159 @@ const UserManagement: React.FC = () => {
         </Grid>
 
         <Grid item xs={12}>
-          <TextField
-            fullWidth
-            variant="outlined"
-            placeholder="Pesquisar usuários..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              ),
-            }}
-            sx={{ mb: 3 }}
-          />
-        </Grid>
-
-        <Grid item xs={12}>
-          <TableContainer component={Paper}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Nome</TableCell>
-                  <TableCell>Grupos</TableCell>
-                  <TableCell>Permissões</TableCell>
-                  <TableCell align="right">Ações</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {filteredUsers.map((user) => (
-                  <TableRow key={user.id}>
-                    <TableCell>{user.name}</TableCell>
-                    <TableCell>
-                      {user.groups.map((groupId) => {
-                        const group = groups.find(g => g.id === groupId);
-                        return group ? (
-                          <Chip
-                            key={groupId}
-                            label={group.name}
-                            size="small"
-                            sx={{ mr: 1, mb: 1 }}
-                          />
-                        ) : null;
-                      })}
-                    </TableCell>
-                    <TableCell>
-                      {user.permissions.map((permissionId) => {
-                        const permission = defaultPermissions.find(p => p.id === permissionId);
-                        return permission ? (
-                          <Chip
-                            key={permissionId}
-                            label={permission.name}
-                            size="small"
-                            variant="outlined"
-                            sx={{ mr: 1, mb: 1 }}
-                          />
-                        ) : null;
-                      })}
-                    </TableCell>
-                    <TableCell align="right">
-                      <IconButton onClick={() => handleEditUser(user)}>
-                        <EditIcon />
-                      </IconButton>
-                      <IconButton 
-                        color="error"
-                        onClick={() => handleDeleteUser(user.id)}
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    </TableCell>
+          <Box sx={{ 
+            backgroundColor: theme.palette.background.paper,
+            borderRadius: 1,
+            boxShadow: theme.shadows[1],
+            overflow: 'hidden',
+          }}>
+            <Box sx={{ p: 2, borderBottom: `1px solid ${theme.palette.divider}` }}>
+              <TextField
+                fullWidth
+                variant="outlined"
+                placeholder="Pesquisar usuários..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon sx={{ color: theme.palette.text.secondary }} />
+                    </InputAdornment>
+                  ),
+                }}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    '& fieldset': {
+                      borderColor: theme.palette.divider,
+                    },
+                    '&:hover fieldset': {
+                      borderColor: theme.palette.primary.main,
+                    },
+                  },
+                }}
+              />
+            </Box>
+            <TableContainer>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: 600 }}>Nome</TableCell>
+                    <TableCell sx={{ fontWeight: 600 }}>Grupos</TableCell>
+                    <TableCell sx={{ fontWeight: 600 }}>Permissões</TableCell>
+                    <TableCell align="right" sx={{ fontWeight: 600 }}>Ações</TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+                </TableHead>
+                <TableBody>
+                  {filteredUsers.map((user) => (
+                    <TableRow 
+                      key={user.id}
+                      sx={{
+                        '&:hover': {
+                          backgroundColor: 'rgba(144, 202, 249, 0.08)',
+                        },
+                      }}
+                    >
+                      <TableCell>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <PeopleIcon sx={{ color: theme.palette.primary.main }} />
+                          <Typography>{user.name}</Typography>
+                        </Box>
+                      </TableCell>
+                      <TableCell>
+                        {user.groups.map((groupId) => {
+                          const group = groups.find(g => g.id === groupId);
+                          return group ? (
+                            <Chip
+                              key={groupId}
+                              label={group.name}
+                              size="small"
+                              sx={{ 
+                                mr: 1, 
+                                mb: 1,
+                                backgroundColor: theme.palette.secondary.main,
+                                color: theme.palette.secondary.contrastText,
+                              }}
+                            />
+                          ) : null;
+                        })}
+                      </TableCell>
+                      <TableCell>
+                        {user.permissions.map((permissionId) => {
+                          const permission = defaultPermissions.find(p => p.id === permissionId);
+                          return permission ? (
+                            <Chip
+                              key={permissionId}
+                              label={permission.name}
+                              size="small"
+                              variant="outlined"
+                              icon={<SecurityIcon />}
+                              sx={{ 
+                                mr: 1, 
+                                mb: 1,
+                                borderColor: theme.palette.primary.main,
+                                color: theme.palette.primary.main,
+                              }}
+                            />
+                          ) : null;
+                        })}
+                      </TableCell>
+                      <TableCell align="right">
+                        <IconButton 
+                          onClick={() => handleEditUser(user)}
+                          sx={{ 
+                            color: theme.palette.primary.main,
+                            '&:hover': {
+                              backgroundColor: 'rgba(144, 202, 249, 0.08)',
+                            },
+                          }}
+                        >
+                          <EditIcon />
+                        </IconButton>
+                        <IconButton 
+                          color="error"
+                          onClick={() => handleDeleteUser(user.id)}
+                          sx={{ 
+                            '&:hover': {
+                              backgroundColor: 'rgba(211, 47, 47, 0.08)',
+                            },
+                          }}
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Box>
         </Grid>
       </Grid>
 
       {/* Dialog para criar/editar usuário */}
-      <Dialog open={openUserDialog} onClose={() => setOpenUserDialog(false)} maxWidth="md" fullWidth>
-        <DialogTitle>
-          {selectedUser ? 'Editar Usuário' : 'Novo Usuário'}
+      <Dialog 
+        open={openUserDialog} 
+        onClose={() => setOpenUserDialog(false)} 
+        maxWidth="md" 
+        fullWidth
+        PaperProps={{
+          sx: {
+            backgroundColor: theme.palette.background.paper,
+          },
+        }}
+      >
+        <DialogTitle sx={{ 
+          borderBottom: `1px solid ${theme.palette.divider}`,
+          pb: 2,
+        }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <PeopleIcon sx={{ color: theme.palette.primary.main }} />
+            <Typography variant="h6">
+              {selectedUser ? 'Editar Usuário' : 'Novo Usuário'}
+            </Typography>
+          </Box>
         </DialogTitle>
-        <DialogContent>
+        <DialogContent sx={{ pt: 3 }}>
           <UserForm
             user={selectedUser}
             groups={groups}
@@ -288,29 +395,95 @@ const UserManagement: React.FC = () => {
             onChange={(data) => setUserFormData(data)}
           />
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenUserDialog(false)}>Cancelar</Button>
-          <Button variant="contained" color="primary" onClick={handleSaveUser}>
+        <DialogActions sx={{ 
+          borderTop: `1px solid ${theme.palette.divider}`,
+          pt: 2,
+          px: 3,
+        }}>
+          <Button 
+            onClick={() => setOpenUserDialog(false)}
+            sx={{ 
+              color: theme.palette.text.secondary,
+              '&:hover': {
+                backgroundColor: 'rgba(255, 255, 255, 0.08)',
+              },
+            }}
+          >
+            Cancelar
+          </Button>
+          <Button 
+            variant="contained" 
+            color="primary" 
+            onClick={handleSaveUser}
+            sx={{
+              backgroundColor: theme.palette.primary.main,
+              '&:hover': {
+                backgroundColor: theme.palette.primary.dark,
+              },
+            }}
+          >
             Salvar
           </Button>
         </DialogActions>
       </Dialog>
 
       {/* Dialog para criar/editar grupo */}
-      <Dialog open={openGroupDialog} onClose={() => setOpenGroupDialog(false)} maxWidth="md" fullWidth>
-        <DialogTitle>
-          {selectedGroup ? 'Editar Grupo' : 'Novo Grupo'}
+      <Dialog 
+        open={openGroupDialog} 
+        onClose={() => setOpenGroupDialog(false)} 
+        maxWidth="md" 
+        fullWidth
+        PaperProps={{
+          sx: {
+            backgroundColor: theme.palette.background.paper,
+          },
+        }}
+      >
+        <DialogTitle sx={{ 
+          borderBottom: `1px solid ${theme.palette.divider}`,
+          pb: 2,
+        }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <GroupIcon sx={{ color: theme.palette.secondary.main }} />
+            <Typography variant="h6">
+              {selectedGroup ? 'Editar Grupo' : 'Novo Grupo'}
+            </Typography>
+          </Box>
         </DialogTitle>
-        <DialogContent>
+        <DialogContent sx={{ pt: 3 }}>
           <GroupForm
             group={selectedGroup}
             permissions={defaultPermissions}
             onChange={(data) => setGroupFormData(data)}
           />
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenGroupDialog(false)}>Cancelar</Button>
-          <Button variant="contained" color="primary" onClick={handleSaveGroup}>
+        <DialogActions sx={{ 
+          borderTop: `1px solid ${theme.palette.divider}`,
+          pt: 2,
+          px: 3,
+        }}>
+          <Button 
+            onClick={() => setOpenGroupDialog(false)}
+            sx={{ 
+              color: theme.palette.text.secondary,
+              '&:hover': {
+                backgroundColor: 'rgba(255, 255, 255, 0.08)',
+              },
+            }}
+          >
+            Cancelar
+          </Button>
+          <Button 
+            variant="contained" 
+            color="secondary" 
+            onClick={handleSaveGroup}
+            sx={{
+              backgroundColor: theme.palette.secondary.main,
+              '&:hover': {
+                backgroundColor: theme.palette.secondary.dark,
+              },
+            }}
+          >
             Salvar
           </Button>
         </DialogActions>
