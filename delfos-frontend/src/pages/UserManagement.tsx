@@ -38,29 +38,33 @@ import {
 } from '@mui/icons-material';
 import UserForm from '../components/UserManagement/UserForm';
 import GroupForm from '../components/UserManagement/GroupForm';
-import { Permission, PermissionGroup, User } from '../types/UserManagement';
+import { Permission, PermissionGroup, User, PermissionType } from '../types/UserManagement';
 import * as userManagementService from '../services/userManagementService';
 
 const defaultPermissions: Permission[] = [
   {
-    id: 'manage_connections',
+    id: 1,
     name: 'Gerenciar Conexões',
     description: 'Permite criar, editar e excluir conexões de banco de dados',
+    type: PermissionType.ADMIN
   },
   {
-    id: 'manage_users',
+    id: 2,
     name: 'Gerenciar Usuários',
     description: 'Permite criar, editar e excluir usuários',
+    type: PermissionType.ADMIN
   },
   {
-    id: 'view_users',
+    id: 3,
     name: 'Ver Usuários',
     description: 'Permite visualizar outros usuários',
+    type: PermissionType.READ
   },
   {
-    id: 'use_connections',
+    id: 4,
     name: 'Usar Conexões',
     description: 'Permite visualizar e usar conexões de banco de dados',
+    type: PermissionType.READ
   },
 ];
 
@@ -74,7 +78,14 @@ const UserManagement: React.FC = () => {
   const [openGroupDialog, setOpenGroupDialog] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [selectedGroup, setSelectedGroup] = useState<PermissionGroup | null>(null);
-  const [userFormData, setUserFormData] = useState<Partial<User>>({});
+  const [userFormData, setUserFormData] = useState<{
+    username: string;
+    password?: string;
+    permissionGroupIds: number[];
+  }>({
+    username: '',
+    permissionGroupIds: []
+  });
   const [groupFormData, setGroupFormData] = useState<Partial<PermissionGroup>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -124,13 +135,16 @@ const UserManagement: React.FC = () => {
 
   const handleCreateUser = () => {
     setSelectedUser(null);
-    setUserFormData({});
+    setUserFormData({ username: '', permissionGroupIds: [] });
     setOpenUserDialog(true);
   };
 
   const handleEditUser = (user: User) => {
     setSelectedUser(user);
-    setUserFormData(user);
+    setUserFormData({
+      username: user.username,
+      permissionGroupIds: user.permissionGroups?.map(group => group.id) || []
+    });
     setOpenUserDialog(true);
   };
 
@@ -153,12 +167,15 @@ const UserManagement: React.FC = () => {
         setUsers(users.map(user => user.id === selectedUser.id ? updatedUser : user));
         showSnackbar('Usuário atualizado com sucesso', 'success');
       } else {
-        const newUserPayload = { ...userFormData };
-        if (!('password' in newUserPayload)) {
+        if (!userFormData.password) {
           showSnackbar('Senha é obrigatória para novo usuário', 'error');
           return;
         }
-        const newUser = await userManagementService.createUser(newUserPayload as Omit<User, 'id'>);
+        const newUser = await userManagementService.createUser({
+          username: userFormData.username,
+          password: userFormData.password,
+          permissionGroupIds: userFormData.permissionGroupIds
+        });
         setUsers([...users, newUser]);
         showSnackbar('Usuário criado com sucesso', 'success');
       }
