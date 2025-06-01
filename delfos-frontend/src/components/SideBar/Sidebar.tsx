@@ -2,7 +2,7 @@ import { Drawer, List, Toolbar, Menu, MenuItem } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import DatabaseConnectionCard from "../DatabaseConnectionCard/DatabaseConnectionCard";
 import ConnectionModal from "../Modal/ConnectionModal/ConnectionModal";
-import { getAllConnectionLabels, getAllConnections } from "../../services/DatabaseConnectionService";
+import { getAllConnectionLabels, getAllConnections, getConnectionById } from "../../services/DatabaseConnectionService";
 import { DatabaseConnection } from "../../services/types/DatabaseConnection";
 import { DatabaseConnectionLabel } from "../../services/types/DatabaseConnectionLabel";
 
@@ -23,9 +23,21 @@ const Sidebar: React.FC<SidebarProps> = ({ drawerWidth, setDrawerWidth, onConnec
   const [startX, setStartX] = useState(0);
   const [selectedDb, setSelectedDb] = useState<string | null>(null);
 
-  const handleEditConnection = (dbName: string) => {
-    setEditingConnection({ dbName });
-    setIsModalOpen(true);
+  const handleEditConnection = async (dbName: string) => {
+    try {
+      // Encontrar o ID da conexão pelo nome
+      const connection = connectionLabels.find(conn => conn.label === dbName);
+      if (connection) {
+        console.log('Buscando detalhes da conexão:', connection);
+        // Buscar os detalhes completos da conexão
+        const connectionDetails = await getConnectionById(connection.id);
+        console.log('Detalhes da conexão recebidos:', connectionDetails);
+        setEditingConnection(connectionDetails);
+        setIsModalOpen(true);
+      }
+    } catch (error) {
+      console.error("Erro ao buscar detalhes da conexão:", error);
+    }
   };
 
   const handleCreateConnection = () => {
@@ -190,7 +202,7 @@ const Sidebar: React.FC<SidebarProps> = ({ drawerWidth, setDrawerWidth, onConnec
         onClose={() => setIsModalOpen(false)}
         onSave={handleSaveConnection}
         initialData={editingConnection}
-        edit={isclickInConnectionLabel}
+        edit={!!editingConnection}
       />
     </Drawer>
   );

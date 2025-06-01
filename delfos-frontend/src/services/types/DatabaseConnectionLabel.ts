@@ -1,5 +1,6 @@
-export type DatabaseConnectionLabel = {
-    id: number;
-    label: string;
-  };
+export interface DatabaseConnectionLabel {
+  id: string;
+  label: string;
+  iconSrc?: string;
+}
   
