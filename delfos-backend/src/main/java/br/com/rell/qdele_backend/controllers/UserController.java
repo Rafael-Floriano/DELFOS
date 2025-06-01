@@ -1,5 +1,6 @@
 package br.com.rell.qdele_backend.controllers;
 
+import br.com.rell.qdele_backend.dto.CreateUserRequest;
 import br.com.rell.qdele_backend.dto.UserDTO;
 import br.com.rell.qdele_backend.services.UserService;
 import lombok.RequiredArgsConstructor;
@@ -15,8 +16,8 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO userDTO) {
-        return ResponseEntity.ok(userService.createUser(userDTO));
+    public ResponseEntity<UserDTO> createUser(@RequestBody CreateUserRequest request) {
+        return ResponseEntity.ok(userService.createUser(request));
     }
 
     @GetMapping

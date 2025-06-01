@@ -1,5 +1,6 @@
 package br.com.rell.qdele_backend.services;
 
+import br.com.rell.qdele_backend.dto.CreateUserRequest;
 import br.com.rell.qdele_backend.dto.PermissionDTO;
 import br.com.rell.qdele_backend.dto.PermissionGroupDTO;
 import br.com.rell.qdele_backend.dto.UserDTO;
@@ -10,6 +11,7 @@ import br.com.rell.qdele_backend.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,25 +27,26 @@ public class UserService {
     private final PermissionService permissionService;
     private final PasswordEncoder passwordEncoder;
 
-    public UserDTO createUser(UserDTO userDTO) {
-        if (userDTO.getUsername() == null || userDTO.getUsername().trim().isEmpty()) {
+    @Transactional(rollbackFor = Exception.class)
+    public UserDTO createUser(CreateUserRequest request) {
+        if (request.getUsername() == null || request.getUsername().trim().isEmpty()) {
             throw new IllegalArgumentException("Username cannot be null or empty");
         }
-        if (userDTO.getPassword() == null || userDTO.getPassword().trim().isEmpty()) {
+        if (request.getPassword() == null || request.getPassword().trim().isEmpty()) {
             throw new IllegalArgumentException("Password cannot be null or empty");
         }
-        if (userRepository.existsByUsername(userDTO.getUsername())) {
+        if (userRepository.existsByUsername(request.getUsername())) {
             throw new IllegalArgumentException("Username already exists");
         }
 
         User user = new User();
-        user.setUsername(userDTO.getUsername().trim());
-        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+        user.setUsername(request.getUsername().trim());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
         
-        if (userDTO.getPermissionGroups() != null) {
-            Set<PermissionGroup> groups = userDTO.getPermissionGroups().stream()
-                    .map(g -> permissionGroupRepository.findById(g.getId())
-                            .orElseThrow(() -> new RuntimeException("Permission group not found: " + g.getId())))
+        if (request.getPermissionGroupIds() != null) {
+            Set<PermissionGroup> groups = request.getPermissionGroupIds().stream()
+                    .map(id -> permissionGroupRepository.findById(id)
+                            .orElseThrow(() -> new RuntimeException("Permission group not found: " + id)))
                     .collect(Collectors.toSet());
             user.setPermissionGroups(groups);
         }
