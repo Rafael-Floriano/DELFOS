@@ -15,7 +15,6 @@ const Dashboard: React.FC = () => {
 
     return (
       <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
-        <Navbar />
         <Box sx={{ display: 'flex', flex: 1 }}>
           <Sidebar 
             drawerWidth={drawerWidth} 
