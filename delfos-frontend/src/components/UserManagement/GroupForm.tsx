@@ -6,8 +6,12 @@ import {
   FormControlLabel,
   Checkbox,
   Typography,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from '@mui/material';
-import { Permission, PermissionGroup } from '../../types/UserManagement';
+import { Permission, PermissionGroup, PermissionType } from '../../types/UserManagement';
 
 interface GroupFormProps {
   group: PermissionGroup | null;
@@ -18,6 +22,7 @@ interface GroupFormProps {
 const GroupForm: React.FC<GroupFormProps> = ({ group, permissions, onChange }) => {
   const [formData, setFormData] = useState<Partial<PermissionGroup>>({
     name: '',
+    description: '',
     permissions: [],
   });
 
@@ -33,10 +38,10 @@ const GroupForm: React.FC<GroupFormProps> = ({ group, permissions, onChange }) =
     onChange(newData);
   };
 
-  const handlePermissionChange = (permissionId: string) => {
-    const newPermissions = formData.permissions?.includes(permissionId)
-      ? formData.permissions.filter(id => id !== permissionId)
-      : [...(formData.permissions || []), permissionId];
+  const handlePermissionChange = (permissionId: number) => {
+    const newPermissions = formData.permissions?.some(p => p.id === permissionId)
+      ? formData.permissions.filter(p => p.id !== permissionId)
+      : [...(formData.permissions || []), { id: permissionId }];
     
     handleChange('permissions', newPermissions);
   };
@@ -49,6 +54,15 @@ const GroupForm: React.FC<GroupFormProps> = ({ group, permissions, onChange }) =
           label="Nome do Grupo"
           value={formData.name}
           onChange={(e) => handleChange('name', e.target.value)}
+          sx={{ mb: 2 }}
+        />
+        <TextField
+          fullWidth
+          label="Descrição"
+          value={formData.description}
+          onChange={(e) => handleChange('description', e.target.value)}
+          multiline
+          rows={2}
         />
       </Box>
 
@@ -57,23 +71,47 @@ const GroupForm: React.FC<GroupFormProps> = ({ group, permissions, onChange }) =
       </Typography>
       <FormGroup>
         {permissions.map((permission) => (
-          <FormControlLabel
-            key={permission.id}
-            control={
-              <Checkbox
-                checked={formData.permissions?.includes(permission.id)}
-                onChange={() => handlePermissionChange(permission.id)}
-              />
-            }
-            label={
-              <Box>
-                <Typography variant="body1">{permission.name}</Typography>
-                <Typography variant="caption" color="text.secondary">
-                  {permission.description}
-                </Typography>
-              </Box>
-            }
-          />
+          <Box key={permission.id} sx={{ mb: 2 }}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={formData.permissions?.some(p => p.id === permission.id)}
+                  onChange={() => handlePermissionChange(permission.id)}
+                />
+              }
+              label={
+                <Box>
+                  <Typography variant="body1">{permission.name}</Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    {permission.description}
+                  </Typography>
+                </Box>
+              }
+            />
+            {formData.permissions?.some(p => p.id === permission.id) && (
+              <FormControl fullWidth sx={{ mt: 1, ml: 4 }}>
+                <InputLabel>Tipo de Permissão</InputLabel>
+                <Select
+                  value={formData.permissions.find(p => p.id === permission.id)?.type || PermissionType.READ}
+                  onChange={(e) => {
+                    const updatedPermissions = formData.permissions?.map(p => 
+                      p.id === permission.id 
+                        ? { ...p, type: e.target.value as PermissionType }
+                        : p
+                    );
+                    handleChange('permissions', updatedPermissions);
+                  }}
+                  label="Tipo de Permissão"
+                >
+                  {Object.values(PermissionType).map((type) => (
+                    <MenuItem key={type} value={type}>
+                      {type}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )}
+          </Box>
         ))}
       </FormGroup>
     </Box>
