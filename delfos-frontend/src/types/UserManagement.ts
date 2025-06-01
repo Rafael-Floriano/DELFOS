@@ -2,7 +2,14 @@ export interface Permission {
   id: number;
   name: string;
   description: string;
-  type: string;
+  type: PermissionType;
+}
+
+export enum PermissionType {
+  READ = 'READ',
+  WRITE = 'WRITE',
+  DELETE = 'DELETE',
+  ADMIN = 'ADMIN'
 }
 
 export interface PermissionGroup {
