@@ -1,18 +1,20 @@
 export interface Permission {
-  id: string;
+  id: number;
   name: string;
   description: string;
+  type: string;
 }
 
 export interface PermissionGroup {
-  id: string;
+  id: number;
   name: string;
-  permissions: string[];
+  description: string;
+  permissions: Permission[];
 }
 
 export interface User {
-  id: string;
-  name: string;
-  groups: string[];
-  permissions: string[];
+  id: number;
+  username: string;
+  permissionGroups: PermissionGroup[];
+  allPermissions: Permission[];
 } 
