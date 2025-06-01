@@ -1,20 +1,24 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 import {
-  ConnectionData,
-  ConnectionModalProps,
-  DatabaseType,
-} from "../../../types/ConnectionModal";
-import {
-  Button,
   Dialog,
-  DialogActions,
-  DialogContent,
   DialogTitle,
-  Grid,
-  MenuItem,
+  DialogContent,
+  DialogActions,
   TextField,
+  Button,
+  MenuItem,
+  Grid,
 } from "@mui/material";
+import { ConnectionData, DatabaseType } from '../../../types/ConnectionModal';
 import { createConnection, updateConnection } from "../../../services/DatabaseConnectionService";
+
+interface ConnectionModalProps {
+  open: boolean;
+  onClose: (success: boolean) => void;
+  onSave: (data: ConnectionData) => void;
+  initialData: any | null;
+  edit: boolean;
+}
 
 const ConnectionModal: React.FC<ConnectionModalProps> = ({
   open,
@@ -24,153 +28,176 @@ const ConnectionModal: React.FC<ConnectionModalProps> = ({
   edit,
 }) => {
   const [formData, setFormData] = useState<ConnectionData>({
-    name: "",
-    host: "",
-    port: "",
-    database: "",
-    user: "",
-    password: "",
-    type: "PostgreSQL",
+    name: '',
+    host: '',
+    port: '',
+    database: '',
+    user: '',
+    password: '',
+    type: 'PostgreSQL',
   });
 
   useEffect(() => {
-    if (initialData) {
-      setFormData(initialData);
+    console.log('ConnectionModal - initialData:', initialData);
+    console.log('ConnectionModal - edit:', edit);
+    
+    if (initialData && edit) {
+      // Mapear os dados da API para o formato do formulário
+      const mappedData = {
+        id: initialData.id,
+        name: initialData.name || '',
+        host: initialData.url || '',
+        port: initialData.port?.toString() || '',
+        database: initialData.databaseUrlCompletedUrl?.split(':')[1] || '',
+        user: initialData.username || '',
+        password: initialData.password || '',
+        type: initialData.databaseType 
+          ? initialData.databaseType.charAt(0) + initialData.databaseType.slice(1).toLowerCase()
+          : 'PostgreSQL',
+      };
+      
+      console.log('ConnectionModal - mappedData:', mappedData);
+      setFormData(mappedData);
+    } else {
+      // Limpar o formulário quando não estiver editando
+      setFormData({
+        name: '',
+        host: '',
+        port: '',
+        database: '',
+        user: '',
+        password: '',
+        type: 'PostgreSQL',
+      });
     }
-  }, [initialData]);
+  }, [initialData, edit]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSelectChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
-      type: e.target.value as DatabaseType,
+      [name]: value,
     }));
   };
 
-  const handleSave = async () => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     try {
       const payload = {
         name: formData.name,
-        host: formData.host,
-        port: Number(formData.port),
-        database: formData.database,
+        url: formData.host,
+        port: parseInt(formData.port),
         username: formData.user,
         password: formData.password,
-        type: formData.type,
+        databaseType: formData.type.toUpperCase(),
       };
 
       if (edit && formData.id) {
-        await updateConnection(formData.id, payload);
+        await updateConnection(parseInt(formData.id), payload);
       } else {
         await createConnection(payload);
       }
 
-      handleClose();
+      onSave(formData);
       onClose(true);
     } catch (error) {
       console.error("Erro ao salvar conexão:", error);
+      onSave(formData);
+      onClose(false);
     }
   };
 
-  const handleClose = () => {
-    setFormData({
-      name: "",
-      host: "",
-      port: "",
-      database: "",
-      user: "",
-      password: "",
-      type: "PostgreSQL",
-    });
-    onClose(false);
-  };
-
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>{edit ? "Editar Conexão" : "Nova Conexão"}</DialogTitle>
-      <DialogContent>
-        <Grid container spacing={2} mt={1}>
-          <Grid item xs={12}>
-            <TextField
-              label="Nome da conexão"
-              name="name"
-              fullWidth
-              value={formData.name}
-              onChange={handleChange}
-            />
+    <Dialog open={open} onClose={() => onClose(false)} maxWidth="sm" fullWidth>
+      <DialogTitle>{edit ? 'Editar Conexão' : 'Nova Conexão'}</DialogTitle>
+      <form onSubmit={handleSubmit}>
+        <DialogContent>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <TextField
+                name="name"
+                label="Nome da Conexão"
+                fullWidth
+                value={formData.name}
+                onChange={handleChange}
+                required
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                name="type"
+                select
+                label="Tipo de Banco"
+                fullWidth
+                value={formData.type}
+                onChange={handleChange}
+                required
+              >
+                <MenuItem value="PostgreSQL">PostgreSQL</MenuItem>
+                <MenuItem value="MariaDB">MariaDB</MenuItem>
+                <MenuItem value="Firebird">Firebird</MenuItem>
+              </TextField>
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                name="host"
+                label="Host"
+                fullWidth
+                value={formData.host}
+                onChange={handleChange}
+                required
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                name="port"
+                label="Porta"
+                fullWidth
+                value={formData.port}
+                onChange={handleChange}
+                required
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                name="database"
+                label="Nome do Banco"
+                fullWidth
+                value={formData.database}
+                onChange={handleChange}
+                required
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                name="user"
+                label="Usuário"
+                fullWidth
+                value={formData.user}
+                onChange={handleChange}
+                required
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                name="password"
+                label="Senha"
+                type="password"
+                fullWidth
+                value={formData.password}
+                onChange={handleChange}
+                required
+              />
+            </Grid>
           </Grid>
-          <Grid item xs={8}>
-            <TextField
-              label="Host"
-              name="host"
-              fullWidth
-              value={formData.host}
-              onChange={handleChange}
-            />
-          </Grid>
-          <Grid item xs={4}>
-            <TextField
-              label="Porta"
-              name="port"
-              fullWidth
-              value={formData.port}
-              onChange={handleChange}
-            />
-          </Grid>
-          <Grid item xs={6}>
-            <TextField
-              label="Banco de dados"
-              name="database"
-              fullWidth
-              value={formData.database}
-              onChange={handleChange}
-            />
-          </Grid>
-          <Grid item xs={6}>
-            <TextField
-              label="Tipo do banco"
-              name="type"
-              select
-              fullWidth
-              value={formData.type}
-              onChange={handleSelectChange}
-            >
-              <MenuItem value="PostgreSQL">PostgreSQL</MenuItem>
-              <MenuItem value="MariaDB">MariaDB</MenuItem>
-              <MenuItem value="Firebird">Firebird</MenuItem>
-            </TextField>
-          </Grid>
-          <Grid item xs={6}>
-            <TextField
-              label="Usuário"
-              name="user"
-              fullWidth
-              value={formData.user}
-              onChange={handleChange}
-            />
-          </Grid>
-          <Grid item xs={6}>
-            <TextField
-              label="Senha"
-              name="password"
-              fullWidth
-              type="password"
-              value={formData.password}
-              onChange={handleChange}
-            />
-          </Grid>
-        </Grid>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleClose}>Cancelar</Button>
-        <Button variant="contained" onClick={handleSave}>
-          Salvar
-        </Button>
-      </DialogActions>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => onClose(false)}>Cancelar</Button>
+          <Button type="submit" variant="contained" color="primary">
+            {edit ? 'Salvar' : 'Criar'}
+          </Button>
+        </DialogActions>
+      </form>
     </Dialog>
   );
 };

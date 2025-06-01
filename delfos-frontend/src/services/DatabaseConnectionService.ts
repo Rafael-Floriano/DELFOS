@@ -19,9 +19,16 @@ export const getAllConnectionLabels = async (): Promise<DatabaseConnectionLabel[
   return response.data;
 };
 
-export const getConnectionById = async (id: number): Promise<DatabaseConnection> => {
-  const response = await httpClient.get(`${BASE_URL}/${id}`);
-  return response.data;
+export const getConnectionById = async (id: string): Promise<DatabaseConnection> => {
+  try {
+    console.log('Buscando conexão com ID:', id);
+    const response = await httpClient.get(`${BASE_URL}/${id}`);
+    console.log('Resposta da API:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Erro ao buscar detalhes da conexão:', error);
+    throw error;
+  }
 };
 
 export const updateConnection = async (id: number, connection: DatabaseConnection): Promise<DatabaseConnection> => {

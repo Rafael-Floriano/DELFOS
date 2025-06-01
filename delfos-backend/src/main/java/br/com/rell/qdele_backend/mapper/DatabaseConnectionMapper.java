@@ -11,11 +11,11 @@ public class DatabaseConnectionMapper {
     public static DatabaseConnection toEntity(DatabaseConnectionRequest request) {
         DatabaseConnection entity = new DatabaseConnection();
         entity.setName(request.name());
-        entity.setUrl(request.host());
+        entity.setUrl(request.url());
         entity.setPort(request.port());
         entity.setUsername(request.username());
         entity.setPassword(request.password());
-        entity.setDatabaseType(request.type());
+        entity.setDatabaseType(request.databaseType());
 
         entity.setCreatedDate(LocalDateTime.now());
         entity.setDeleted(false);

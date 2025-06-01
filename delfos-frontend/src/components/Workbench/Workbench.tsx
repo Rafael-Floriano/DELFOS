@@ -1,11 +1,14 @@
 import { Box } from "@mui/material";
 import SpeechToText from "../../SpeechToText";
+import { DatabaseConnectionLabel } from "../../services/types/DatabaseConnectionLabel";
+import { useState } from "react";
 
 interface WorkbenchProps {
   sidebarWidth: number;
+  selectedConnection: DatabaseConnectionLabel | null;
 }
 
-const Workbench: React.FC<WorkbenchProps> = ({ sidebarWidth }) => {
+const Workbench: React.FC<WorkbenchProps> = ({ sidebarWidth, selectedConnection }) => {
   const handleStart = () => {
     console.log('Iniciando gravação...');
   };
@@ -27,7 +30,11 @@ const Workbench: React.FC<WorkbenchProps> = ({ sidebarWidth }) => {
       }}
     >
       <Box sx={{ padding: 3 }}>
-        <SpeechToText onStart={handleStart} onStop={handleStop} />
+        <SpeechToText 
+          onStart={handleStart} 
+          onStop={handleStop} 
+          selectedConnection={selectedConnection}
+        />
       </Box>
     </Box>
   );

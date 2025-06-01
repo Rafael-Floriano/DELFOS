@@ -1,17 +1,18 @@
 import { Drawer, List, Toolbar, Menu, MenuItem } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import ConnectionLabel from "../ConnectionLabel/ConnectionLabel";
+import DatabaseConnectionCard from "../DatabaseConnectionCard/DatabaseConnectionCard";
 import ConnectionModal from "../Modal/ConnectionModal/ConnectionModal";
-import { getAllConnectionLabels, getAllConnections } from "../../services/DatabaseConnectionService";
+import { getAllConnectionLabels, getAllConnections, getConnectionById } from "../../services/DatabaseConnectionService";
 import { DatabaseConnection } from "../../services/types/DatabaseConnection";
 import { DatabaseConnectionLabel } from "../../services/types/DatabaseConnectionLabel";
 
 interface SidebarProps {
   drawerWidth: number;
   setDrawerWidth: (width: number) => void;
+  onConnectionSelect: (connection: DatabaseConnectionLabel | null) => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ drawerWidth, setDrawerWidth }) => {
+const Sidebar: React.FC<SidebarProps> = ({ drawerWidth, setDrawerWidth, onConnectionSelect }) => {
   const [connectionLabels, setConnectionLabels] = useState<DatabaseConnectionLabel[]>([]);
   const [isclickInConnectionLabel, setIsclickInConnectionLabel] = useState<boolean>(false);
   const [selectedConnectionLabel, setSelectedConnectionLabel] = useState<number>(0);
@@ -22,9 +23,21 @@ const Sidebar: React.FC<SidebarProps> = ({ drawerWidth, setDrawerWidth }) => {
   const [startX, setStartX] = useState(0);
   const [selectedDb, setSelectedDb] = useState<string | null>(null);
 
-  const handleEditConnection = (dbName: string) => {
-    setEditingConnection({ dbName });
-    setIsModalOpen(true);
+  const handleEditConnection = async (dbName: string) => {
+    try {
+      // Encontrar o ID da conexão pelo nome
+      const connection = connectionLabels.find(conn => conn.label === dbName);
+      if (connection) {
+        console.log('Buscando detalhes da conexão:', connection);
+        // Buscar os detalhes completos da conexão
+        const connectionDetails = await getConnectionById(connection.id);
+        console.log('Detalhes da conexão recebidos:', connectionDetails);
+        setEditingConnection(connectionDetails);
+        setIsModalOpen(true);
+      }
+    } catch (error) {
+      console.error("Erro ao buscar detalhes da conexão:", error);
+    }
   };
 
   const handleCreateConnection = () => {
@@ -51,6 +64,8 @@ const Sidebar: React.FC<SidebarProps> = ({ drawerWidth, setDrawerWidth }) => {
 
   const handleSelect = (dbName: string) => {
     setSelectedDb(dbName);
+    const selectedConnection = connectionLabels.find(conn => conn.label === dbName) || null;
+    onConnectionSelect(selectedConnection);
   };
 
   const handleMouseDown = (e: any) => {
@@ -74,6 +89,7 @@ const Sidebar: React.FC<SidebarProps> = ({ drawerWidth, setDrawerWidth }) => {
 
   const handleSaveConnection = (data: any) => {
     setIsModalOpen(false);
+    fetchConnections();
   };
 
   const handleRightClickConnectionLabel = (connectionLabelNumber: number) => {
@@ -86,21 +102,20 @@ const Sidebar: React.FC<SidebarProps> = ({ drawerWidth, setDrawerWidth }) => {
     setContextMenu(null);
   }
 
-  useEffect(() => {
-    const fetchConnections = async () => {
-      try {
-        const connections:DatabaseConnectionLabel[] = await getAllConnectionLabels();
-        const connectionsWithIcons = connections.map(conn => ({
-          ...conn,
-          iconSrc: "/icons/database/postgresql-logo-svgrepo-com.svg"
-        }));
-        setConnectionLabels(connectionsWithIcons);
-        console.log("getAllConnections - ", connectionLabels);
-      } catch (error) {
-        console.error("Erro ao buscar conexões:", error);
-      }
-    };
+  const fetchConnections = async () => {
+    try {
+      const connections:DatabaseConnectionLabel[] = await getAllConnectionLabels();
+      const connectionsWithIcons = connections.map(conn => ({
+        ...conn,
+        iconSrc: "/icons/database/postgresql-logo-svgrepo-com.svg"
+      }));
+      setConnectionLabels(connectionsWithIcons);
+    } catch (error) {
+      console.error("Erro ao buscar conexões:", error);
+    }
+  };
 
+  useEffect(() => {
     fetchConnections();
   }, []);
 
@@ -139,14 +154,17 @@ const Sidebar: React.FC<SidebarProps> = ({ drawerWidth, setDrawerWidth }) => {
             Nenhuma conexão encontrada. Clique com o botão direito para adicionar uma.
           </div>
         ) : (
-          connectionLabels.map((object, i) => (
-            <ConnectionLabel
+          connectionLabels.map((connection, i) => (
+            <DatabaseConnectionCard
               key={i}
-              dbName={object.label}
-              iconSrc="/icons/database/postgresql-logo-svgrepo-com.svg"
-              selected={selectedDb === object.label}
+              connection={connection}
+              selected={selectedDb === connection.label}
               onSelect={handleSelect}
-              onRightClick={() => handleRightClickConnectionLabel(i)}
+              onEdit={handleEditConnection}
+              onDelete={() => {
+                setSelectedConnectionLabel(i);
+                handleDeleteConnection();
+              }}
             />
           ))
         )}
@@ -184,7 +202,7 @@ const Sidebar: React.FC<SidebarProps> = ({ drawerWidth, setDrawerWidth }) => {
         onClose={() => setIsModalOpen(false)}
         onSave={handleSaveConnection}
         initialData={editingConnection}
-        edit={isclickInConnectionLabel}
+        edit={!!editingConnection}
       />
     </Drawer>
   );
