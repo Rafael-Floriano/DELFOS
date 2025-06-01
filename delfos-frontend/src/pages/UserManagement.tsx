@@ -23,6 +23,9 @@ import {
   CardContent,
   Divider,
   useTheme,
+  Snackbar,
+  Alert,
+  CircularProgress,
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -36,6 +39,7 @@ import {
 import UserForm from '../components/UserManagement/UserForm';
 import GroupForm from '../components/UserManagement/GroupForm';
 import { Permission, PermissionGroup, User } from '../types/UserManagement';
+import * as userManagementService from '../services/userManagementService';
 
 const defaultPermissions: Permission[] = [
   {
@@ -64,6 +68,7 @@ const UserManagement: React.FC = () => {
   const theme = useTheme();
   const [users, setUsers] = useState<User[]>([]);
   const [groups, setGroups] = useState<PermissionGroup[]>([]);
+  const [permissions, setPermissions] = useState<Permission[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [openUserDialog, setOpenUserDialog] = useState(false);
   const [openGroupDialog, setOpenGroupDialog] = useState(false);
@@ -71,37 +76,51 @@ const UserManagement: React.FC = () => {
   const [selectedGroup, setSelectedGroup] = useState<PermissionGroup | null>(null);
   const [userFormData, setUserFormData] = useState<Partial<User>>({});
   const [groupFormData, setGroupFormData] = useState<Partial<PermissionGroup>>({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [snackbar, setSnackbar] = useState<{
+    open: boolean;
+    message: string;
+    severity: 'success' | 'error';
+  }>({
+    open: false,
+    message: '',
+    severity: 'success',
+  });
 
-  // Mock data - substituir por chamadas à API
+  const loadData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      console.log('Iniciando carregamento dos dados...');
+      
+      const [usersData, groupsData, permissionsData] = await Promise.all([
+        userManagementService.getUsers(),
+        userManagementService.getPermissionGroups(),
+        userManagementService.getPermissions(),
+      ]);
+      
+      console.log('Dados carregados:', { usersData, groupsData, permissionsData });
+      
+      setUsers(usersData);
+      setGroups(groupsData);
+      setPermissions(permissionsData);
+    } catch (error) {
+      console.error('Erro ao carregar dados:', error);
+      setError('Erro ao carregar dados. Por favor, tente novamente.');
+      showSnackbar('Erro ao carregar dados', 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    setUsers([
-      {
-        id: '1',
-        name: 'Admin',
-        groups: ['admin'],
-        permissions: ['manage_connections', 'manage_users', 'view_users', 'use_connections'],
-      },
-      {
-        id: '2',
-        name: 'Usuário',
-        groups: ['user'],
-        permissions: ['use_connections'],
-      },
-    ]);
-
-    setGroups([
-      {
-        id: 'admin',
-        name: 'Administrador',
-        permissions: ['manage_connections', 'manage_users', 'view_users', 'use_connections'],
-      },
-      {
-        id: 'user',
-        name: 'Usuário',
-        permissions: ['use_connections'],
-      },
-    ]);
+    loadData();
   }, []);
+
+  const showSnackbar = (message: string, severity: 'success' | 'error') => {
+    setSnackbar({ open: true, message, severity });
+  };
 
   const handleCreateUser = () => {
     setSelectedUser(null);
@@ -127,57 +146,108 @@ const UserManagement: React.FC = () => {
     setOpenGroupDialog(true);
   };
 
-  const handleSaveUser = () => {
-    if (selectedUser) {
-      // Atualizar usuário existente
-      setUsers(users.map(user => 
-        user.id === selectedUser.id ? { ...user, ...userFormData } : user
-      ));
-    } else {
-      // Criar novo usuário
-      const newUser: User = {
-        id: Date.now().toString(),
-        name: userFormData.name || '',
-        groups: userFormData.groups || [],
-        permissions: userFormData.permissions || [],
-      };
-      setUsers([...users, newUser]);
+  const handleSaveUser = async () => {
+    try {
+      if (selectedUser) {
+        const updatedUser = await userManagementService.updateUser(selectedUser.id, userFormData);
+        setUsers(users.map(user => user.id === selectedUser.id ? updatedUser : user));
+        showSnackbar('Usuário atualizado com sucesso', 'success');
+      } else {
+        const newUserPayload = { ...userFormData };
+        if (!('password' in newUserPayload)) {
+          showSnackbar('Senha é obrigatória para novo usuário', 'error');
+          return;
+        }
+        const newUser = await userManagementService.createUser(newUserPayload as Omit<User, 'id'>);
+        setUsers([...users, newUser]);
+        showSnackbar('Usuário criado com sucesso', 'success');
+      }
+      setOpenUserDialog(false);
+    } catch (error) {
+      showSnackbar('Erro ao salvar usuário', 'error');
     }
-    setOpenUserDialog(false);
   };
 
-  const handleSaveGroup = () => {
-    if (selectedGroup) {
-      // Atualizar grupo existente
-      setGroups(groups.map(group => 
-        group.id === selectedGroup.id ? { ...group, ...groupFormData } : group
-      ));
-    } else {
-      // Criar novo grupo
-      const newGroup: PermissionGroup = {
-        id: Date.now().toString(),
-        name: groupFormData.name || '',
-        permissions: groupFormData.permissions || [],
-      };
-      setGroups([...groups, newGroup]);
+  const handleSaveGroup = async () => {
+    try {
+      if (selectedGroup) {
+        const updatedGroup = await userManagementService.updatePermissionGroup(selectedGroup.id, groupFormData);
+        setGroups(groups.map(group => group.id === selectedGroup.id ? updatedGroup : group));
+        showSnackbar('Grupo atualizado com sucesso', 'success');
+      } else {
+        const newGroup = await userManagementService.createPermissionGroup(groupFormData as Omit<PermissionGroup, 'id'>);
+        setGroups([...groups, newGroup]);
+        showSnackbar('Grupo criado com sucesso', 'success');
+      }
+      setOpenGroupDialog(false);
+    } catch (error) {
+      showSnackbar('Erro ao salvar grupo', 'error');
     }
-    setOpenGroupDialog(false);
   };
 
-  const handleDeleteUser = (userId: string) => {
-    setUsers(users.filter(user => user.id !== userId));
+  const handleDeleteUser = async (userId: number) => {
+    try {
+      await userManagementService.deleteUser(userId);
+      setUsers(users.filter(user => user.id !== userId));
+      showSnackbar('Usuário excluído com sucesso', 'success');
+    } catch (error) {
+      showSnackbar('Erro ao excluir usuário', 'error');
+    }
   };
 
-  const handleDeleteGroup = (groupId: string) => {
-    setGroups(groups.filter(group => group.id !== groupId));
+  const handleDeleteGroup = async (groupId: number) => {
+    try {
+      await userManagementService.deletePermissionGroup(groupId);
+      setGroups(groups.filter(group => group.id !== groupId));
+      showSnackbar('Grupo excluído com sucesso', 'success');
+    } catch (error) {
+      showSnackbar('Erro ao excluir grupo', 'error');
+    }
   };
 
   const filteredUsers = users.filter(user =>
-    user.name.toLowerCase().includes(searchTerm.toLowerCase())
+    (user.username || '').toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  if (loading) {
+    return (
+      <Box sx={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        minHeight: '100vh',
+        backgroundColor: theme.palette.background.default 
+      }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box sx={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        minHeight: '100vh',
+        backgroundColor: theme.palette.background.default,
+        flexDirection: 'column',
+        gap: 2
+      }}>
+        <Typography color="error" variant="h6">{error}</Typography>
+        <Button 
+          variant="contained" 
+          onClick={loadData}
+          sx={{ mt: 2 }}
+        >
+          Tentar Novamente
+        </Button>
+      </Box>
+    );
+  }
+
   return (
-    <Box sx={{ p: 3, maxWidth: '1400px', margin: '0 auto' }}>
+    <Box sx={{ p: 3, maxWidth: '1400px', margin: '0 auto', backgroundColor: theme.palette.background.default }}>
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <Box sx={{ 
@@ -290,46 +360,40 @@ const UserManagement: React.FC = () => {
                       <TableCell>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                           <PeopleIcon sx={{ color: theme.palette.primary.main }} />
-                          <Typography>{user.name}</Typography>
+                          <Typography>{user.username}</Typography>
                         </Box>
                       </TableCell>
                       <TableCell>
-                        {user.groups.map((groupId) => {
-                          const group = groups.find(g => g.id === groupId);
-                          return group ? (
-                            <Chip
-                              key={groupId}
-                              label={group.name}
-                              size="small"
-                              sx={{ 
-                                mr: 1, 
-                                mb: 1,
-                                backgroundColor: theme.palette.secondary.main,
-                                color: theme.palette.secondary.contrastText,
-                              }}
-                            />
-                          ) : null;
-                        })}
+                        {(user.permissionGroups || []).map((group) => (
+                          <Chip
+                            key={group.id}
+                            label={group.name}
+                            size="small"
+                            sx={{ 
+                              mr: 1, 
+                              mb: 1,
+                              backgroundColor: theme.palette.secondary.main,
+                              color: theme.palette.secondary.contrastText,
+                            }}
+                          />
+                        ))}
                       </TableCell>
                       <TableCell>
-                        {user.permissions.map((permissionId) => {
-                          const permission = defaultPermissions.find(p => p.id === permissionId);
-                          return permission ? (
-                            <Chip
-                              key={permissionId}
-                              label={permission.name}
-                              size="small"
-                              variant="outlined"
-                              icon={<SecurityIcon />}
-                              sx={{ 
-                                mr: 1, 
-                                mb: 1,
-                                borderColor: theme.palette.primary.main,
-                                color: theme.palette.primary.main,
-                              }}
-                            />
-                          ) : null;
-                        })}
+                        {(user.allPermissions || []).map((permission) => (
+                          <Chip
+                            key={permission.id}
+                            label={permission.name}
+                            size="small"
+                            variant="outlined"
+                            icon={<SecurityIcon />}
+                            sx={{ 
+                              mr: 1, 
+                              mb: 1,
+                              borderColor: theme.palette.primary.main,
+                              color: theme.palette.primary.main,
+                            }}
+                          />
+                        ))}
                       </TableCell>
                       <TableCell align="right">
                         <IconButton 
@@ -488,6 +552,21 @@ const UserManagement: React.FC = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert 
+          onClose={() => setSnackbar({ ...snackbar, open: false })} 
+          severity={snackbar.severity}
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };
