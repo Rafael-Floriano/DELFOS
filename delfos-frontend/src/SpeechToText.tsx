@@ -113,9 +113,9 @@ const SpeechToText: React.FC<{
       //   isRecording ? stopRecording() : startRecording();
       // } else
       
-      if (event.key.toLowerCase() === 't') {
-        setShowTextInputModal(true);
-      }
+      // if (event.key.toLowerCase() === 't') {
+      //   setShowTextInputModal(true);
+      // }
     };
 
     window.addEventListener('keydown', handleKeyPress);
@@ -423,9 +423,9 @@ const SpeechToText: React.FC<{
                   sx={{ background: '#90caf9', color: '#23232b', fontWeight: 600, '&:hover': { background: '#5fa8d3' } }}
                   onClick={() => setShowTextInputModal(true)}
                 >
-                  Texto (T)
+                  Pesquisa por texto
                 </Button>
-                <Button
+                {/* <Button
                   variant="contained"
                   sx={{ background: '#90caf9', color: '#23232b', fontWeight: 600, '&:hover': { background: '#5fa8d3' } }}
                   onClick={() => {
@@ -436,8 +436,8 @@ const SpeechToText: React.FC<{
                     }
                   }}
                 >
-                  Voz (V)
-                </Button>
+                  Pesquisa por voz
+                </Button> */}
               </Box>
             </Box>
             <TableContainer sx={{ flex: 1, width: '100%', height: '100%', background: 'transparent' }}>

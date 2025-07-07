@@ -1,0 +1,318 @@
+[
+    {
+        "instruction": "Quais são os nomes e e-mails dos clientes?",
+        "input": "",
+        "output": "SELECT nome, email FROM cliente;"
+    },
+    {
+        "instruction": "Liste os endereços de todos os clientes que moram em Minas Gerais.",
+        "input": "",
+        "output": "SELECT * FROM endereco WHERE estado = 'MG';"
+    },
+    {
+        "instruction": "Recupere os nomes dos clientes e o nome da cidade onde moram.",
+        "input": "",
+        "output": "SELECT cliente.nome, endereco.cidade FROM cliente JOIN endereco ON cliente.id = endereco.cliente_id;"
+    },
+    {
+        "instruction": "Liste todos os produtos com preço acima de 1000 reais.",
+        "input": "",
+        "output": "SELECT * FROM produto WHERE preco > 1000;"
+    },
+    {
+        "instruction": "Quais são os produtos disponíveis e seus respectivos preços?",
+        "input": "",
+        "output": "SELECT nome, preco FROM produto;"
+    },
+    {
+        "instruction": "Mostre os clientes e os produtos que eles compraram.",
+        "input": "",
+        "output": "SELECT cliente.nome as nome_do_cliente, produto.nome as nome_do_produto FROM venda JOIN cliente ON venda.cliente_id = cliente.id JOIN produto ON venda.produto_id = produto.id;"
+    },
+    {
+        "instruction": "Liste as vendas realizadas, incluindo nome do cliente, nome do produto e total.",
+        "input": "",
+        "output": "SELECT cliente.nome as nome_do_cliente, produto.nome as nome_do_produto, venda.total FROM venda JOIN cliente ON venda.cliente_id = cliente.id JOIN produto ON venda.produto_id = produto.id;"
+    },
+    {
+        "instruction": "Obtenha a quantidade total de vendas realizadas.",
+        "input": "",
+        "output": "SELECT COUNT(*) FROM venda;"
+    },
+    {
+        "instruction": "Obtenha a quantidade total de vendas realizadas.",
+        "input": "",
+        "output": "SELECT COUNT(*) FROM venda;"
+    },
+    {
+        "instruction": "Qual o meu total de vendas realizadas?",
+        "input": "",
+        "output": "SELECT COUNT(*) FROM venda;"
+    },
+    {
+        "instruction": "Qual o valor total de todas as vendas realizadas?",
+        "input": "",
+        "output": "SELECT SUM(total) FROM venda;"
+    },
+    {
+        "instruction": "Mostre a quantidade de vendas por estado.",
+        "input": "",
+        "output": "SELECT endereco.estado, COUNT(venda.id) AS total_vendas FROM venda JOIN cliente ON venda.cliente_id = cliente.id JOIN endereco ON cliente.id = endereco.cliente_id GROUP BY endereco.estado;"
+    },
+    {
+        "instruction": "Quais produtos foram comprados por clientes de São Paulo?",
+        "input": "",
+        "output": "SELECT DISTINCT produto.nome FROM venda JOIN cliente ON venda.cliente_id = cliente.id JOIN endereco ON cliente.id = endereco.cliente_id JOIN produto ON venda.produto_id = produto.id WHERE endereco.estado = 'SP';"
+    },
+    {
+        "instruction": "Mostre o nome do cliente e o total que ele gastou em compras.",
+        "input": "",
+        "output": "SELECT cliente.nome, SUM(venda.total) AS total_gasto FROM venda JOIN cliente ON venda.cliente_id = cliente.id GROUP BY cliente.nome;"
+    },
+    {
+        "instruction": "Mostre todas as minhas vendas",
+        "input":"",
+        "output": "SELECT * from venda;"
+    },
+    {
+        "instruction": "Quais são os nomes de todos os clientes?",
+        "input": "",
+        "output": "SELECT nome FROM cliente;"
+    },
+    {
+        "instruction": "Liste todos os endereços registrados no sistema.",
+        "input": "",
+        "output": "SELECT * FROM endereco;"
+    },
+    {
+        "instruction": "Quais produtos custam menos de 500 reais?",
+        "input": "",
+        "output": "SELECT * FROM produto WHERE preco < 500;"
+    },
+    {
+        "instruction": "Me mostre os nomes dos produtos e seus respectivos IDs.",
+        "input": "",
+        "output": "SELECT id, nome FROM produto;"
+    },
+    {
+        "instruction": "Recupere todos os e-mails dos clientes.",
+        "input": "",
+        "output": "SELECT email FROM cliente;"
+    },
+    {
+        "instruction": "Liste os clientes e seus endereços completos.",
+        "input": "",
+        "output": "SELECT cliente.nome, endereco.rua, endereco.cidade, endereco.estado, endereco.cep FROM cliente JOIN endereco ON cliente.id = endereco.cliente_id;"
+    },
+    {
+        "instruction": "Quais produtos foram vendidos, com nome e valor total da venda?",
+        "input": "",
+        "output": "SELECT produto.nome, venda.total FROM venda JOIN produto ON venda.produto_id = produto.id;"
+    },
+    {
+        "instruction": "Mostre os clientes que não possuem endereço cadastrado.",
+        "input": "",
+        "output": "SELECT cliente.nome FROM cliente LEFT JOIN endereco ON cliente.id = endereco.cliente_id WHERE endereco.id IS NULL;"
+    },
+    {
+        "instruction": "Liste os nomes dos produtos vendidos e a quantidade vendida.",
+        "input": "",
+        "output": "SELECT produto.nome, venda.quantidade FROM venda JOIN produto ON venda.produto_id = produto.id;"
+    },
+    {
+        "instruction": "Recupere os nomes dos clientes e os nomes dos produtos comprados por eles.",
+        "input": "",
+        "output": "SELECT cliente.nome, produto.nome FROM venda JOIN cliente ON venda.cliente_id = cliente.id JOIN produto ON venda.produto_id = produto.id;"
+    },
+    {
+        "instruction": "Qual o produto mais caro cadastrado?",
+        "input": "",
+        "output": "SELECT nome FROM produto ORDER BY preco DESC LIMIT 1;"
+    },
+    {
+        "instruction": "Liste o total de vendas agrupado por produto.",
+        "input": "",
+        "output": "SELECT produto.nome, SUM(venda.total) AS total_vendido FROM venda JOIN produto ON venda.produto_id = produto.id GROUP BY produto.nome;"
+    },
+    {
+        "instruction": "Quais clientes compraram mais de 2 produtos?",
+        "input": "",
+        "output": "SELECT cliente.nome FROM venda JOIN cliente ON venda.cliente_id = cliente.id GROUP BY cliente.nome HAVING COUNT(venda.produto_id) > 2;"
+    },
+    {
+        "instruction": "Mostre os estados com maior número de clientes.",
+        "input": "",
+        "output": "SELECT estado, COUNT(*) AS total_clientes FROM endereco GROUP BY estado ORDER BY total_clientes DESC;"
+    },
+    {
+        "instruction": "Liste os nomes dos clientes que moram em capitais do sul do Brasil.",
+        "input": "",
+        "output": "SELECT cliente.nome FROM cliente JOIN endereco ON cliente.id = endereco.cliente_id WHERE cidade IN ('Porto Alegre', 'Curitiba', 'Florianópolis');"
+    },
+    {
+        "instruction": "Quais são os clientes que ainda não fizeram nenhuma compra?",
+        "input": "",
+        "output": "SELECT cliente.nome FROM cliente LEFT JOIN venda ON cliente.id = venda.cliente_id WHERE venda.id IS NULL;"
+    },
+    {
+        "instruction": "Liste os nomes dos produtos com a média de preço entre todos os produtos.",
+        "input": "",
+        "output": "SELECT nome FROM produto WHERE preco > (SELECT AVG(preco) FROM produto);"
+    },
+    {
+        "instruction": "Mostre as vendas com valor total superior a 1000 reais.",
+        "input": "",
+        "output": "SELECT * FROM venda WHERE total > 1000;"
+    },
+    {
+        "instruction": "Quais produtos foram vendidos mais de uma vez?",
+        "input": "",
+        "output": "SELECT produto.nome FROM venda JOIN produto ON venda.produto_id = produto.id GROUP BY produto.nome HAVING COUNT(*) > 1;"
+    },
+    {
+        "instruction": "Recupere os clientes e os produtos comprados, ordenados pelo valor da compra (do maior para o menor).",
+        "input": "",
+        "output": "SELECT cliente.nome, produto.nome, venda.total FROM venda JOIN cliente ON venda.cliente_id = cliente.id JOIN produto ON venda.produto_id = produto.id ORDER BY venda.total DESC;"
+    },
+    {
+        "instruction": "Liste os clientes que moram no estado de 'PR' e que já realizaram alguma compra.",
+        "input": "",
+        "output": "SELECT DISTINCT cliente.nome FROM cliente JOIN endereco ON cliente.id = endereco.cliente_id JOIN venda ON cliente.id = venda.cliente_id WHERE endereco.estado = 'PR';"
+    },
+    {
+        "instruction": "Quais são os cinco produtos mais baratos?",
+        "input": "",
+        "output": "SELECT nome FROM produto ORDER BY preco ASC LIMIT 5;"
+    },
+    {
+        "instruction": "Mostre os dados dos produtos vendidos junto com o valor total de cada venda.",
+        "input": "",
+        "output": "SELECT produto.nome, produto.preco, venda.total FROM venda JOIN produto ON venda.produto_id = produto.id;"
+    },
+    {
+        "instruction": "Quantos clientes moram em cada cidade?",
+        "input": "",
+        "output": "SELECT cidade, COUNT(*) AS total_clientes FROM endereco GROUP BY cidade;"
+    },
+    {
+        "instruction": "Quero saber quais estados têm clientes com o nome começando com 'J'.",
+        "input": "",
+        "output": "SELECT DISTINCT endereco.estado FROM cliente JOIN endereco ON cliente.id = endereco.cliente_id WHERE cliente.nome LIKE 'J%';"
+    },
+    {
+        "instruction": "Liste os produtos que custam entre 500 e 1500 reais.",
+        "input": "",
+        "output": "SELECT * FROM produto WHERE preco BETWEEN 500 AND 1500;"
+    },
+    {
+        "instruction": "Qual é a média de preço dos produtos vendidos?",
+        "input": "",
+        "output": "SELECT AVG(produto.preco) FROM venda JOIN produto ON venda.produto_id = produto.id;"
+    },
+    {
+        "instruction": "Quero ver os nomes dos produtos que nunca foram vendidos.",
+        "input": "",
+        "output": "SELECT nome FROM produto WHERE id NOT IN (SELECT produto_id FROM venda);"
+    },
+    {
+        "instruction": "Me mostre os clientes que moram no mesmo estado que 'Carlos Pereira'.",
+        "input": "",
+        "output": "SELECT c2.nome FROM cliente c1 JOIN endereco e1 ON c1.id = e1.cliente_id JOIN endereco e2 ON e1.estado = e2.estado JOIN cliente c2 ON e2.cliente_id = c2.id WHERE c1.nome = 'Carlos Pereira';"
+    },
+    {
+        "instruction": "Quero saber quais cidades têm mais de um cliente.",
+        "input": "",
+        "output": "SELECT cidade FROM endereco GROUP BY cidade HAVING COUNT(*) > 1;"
+    },
+    {
+        "instruction": "Quais produtos foram comprados por Ana Souza?",
+        "input": "",
+        "output": "SELECT produto.nome FROM venda JOIN produto ON venda.produto_id = produto.id JOIN cliente ON venda.cliente_id = cliente.id WHERE cliente.nome = 'Ana Souza';"
+    },
+    {
+        "instruction": "Liste os nomes e CEPs dos clientes que compraram qualquer coisa.",
+        "input": "",
+        "output": "SELECT DISTINCT cliente.nome, endereco.cep FROM venda JOIN cliente ON venda.cliente_id = cliente.id JOIN endereco ON cliente.id = endereco.cliente_id;"
+    },
+    {
+        "instruction": "Qual é o ticket médio das vendas?",
+        "input": "",
+        "output": "SELECT AVG(total) FROM venda;"
+    },
+    {
+        "instruction": "Quero saber a soma total gasta por cada estado.",
+        "input": "",
+        "output": "SELECT endereco.estado, SUM(venda.total) AS total_por_estado FROM venda JOIN cliente ON venda.cliente_id = cliente.id JOIN endereco ON cliente.id = endereco.cliente_id GROUP BY endereco.estado;"
+    },
+    {
+        "instruction": "Quais produtos custam mais do que a média de todos os produtos?",
+        "input": "",
+        "output": "SELECT nome FROM produto WHERE preco > (SELECT AVG(preco) FROM produto);"
+    },
+    {
+        "instruction": "Me diga os três produtos mais vendidos em quantidade.",
+        "input": "",
+        "output": "SELECT produto.nome, SUM(venda.quantidade) AS total_vendido FROM venda JOIN produto ON venda.produto_id = produto.id GROUP BY produto.nome ORDER BY total_vendido DESC LIMIT 3;"
+    },
+    {
+        "instruction": "Quero os nomes e cidades dos clientes que compraram mais de 1000 reais.",
+        "input": "",
+        "output": "SELECT cliente.nome, endereco.cidade FROM venda JOIN cliente ON venda.cliente_id = cliente.id JOIN endereco ON cliente.id = endereco.cliente_id WHERE venda.total > 1000;"
+    },
+    {
+        "instruction": "Quantos clientes únicos fizeram compras?",
+        "input": "",
+        "output": "SELECT COUNT(DISTINCT cliente_id) FROM venda;"
+    },
+    {
+        "instruction": "Me mostre o nome dos produtos vendidos para clientes de Recife.",
+        "input": "",
+        "output": "SELECT DISTINCT produto.nome FROM venda JOIN cliente ON venda.cliente_id = cliente.id JOIN endereco ON cliente.id = endereco.cliente_id JOIN produto ON venda.produto_id = produto.id WHERE endereco.cidade = 'Recife';"
+    },
+    {
+        "instruction": "Qual cliente fez a maior compra?",
+        "input": "",
+        "output": "SELECT cliente.nome FROM venda JOIN cliente ON venda.cliente_id = cliente.id ORDER BY venda.total DESC LIMIT 1;"
+    },
+    {
+        "instruction": "Me mostre o nome dos produtos vendidos para clientes de Recife.",
+        "input": "",
+        "output": "SELECT DISTINCT produto.nome FROM venda JOIN cliente ON venda.cliente_id = cliente.id JOIN endereco ON cliente.id = endereco.cliente_id JOIN produto ON venda.produto_id = produto.id WHERE endereco.cidade = 'Recife';"
+    },
+    {
+        "instruction": "Qual cliente fez a maior compra?",
+        "input": "",
+        "output": "SELECT cliente.nome FROM venda JOIN cliente ON venda.cliente_id = cliente.id ORDER BY venda.total DESC LIMIT 1;"
+    },
+    {
+        "instruction": "Quais produtos foram vendidos apenas uma vez?",
+        "input": "",
+        "output": "SELECT produto.nome FROM venda JOIN produto ON venda.produto_id = produto.id GROUP BY produto.nome HAVING COUNT(*) = 1;"
+    },
+    {
+        "instruction": "Recupere todos os clientes e seus estados, mesmo que não tenham endereço.",
+        "input": "",
+        "output": "SELECT cliente.nome, endereco.estado FROM cliente LEFT JOIN endereco ON cliente.id = endereco.cliente_id;"
+    },
+    {
+        "instruction": "Mostre os clientes que moram em Curitiba e já compraram alguma coisa.",
+        "input": "",
+        "output": "SELECT DISTINCT cliente.nome FROM cliente JOIN endereco ON cliente.id = endereco.cliente_id JOIN venda ON cliente.id = venda.cliente_id WHERE endereco.cidade = 'Curitiba';"
+    },
+    {
+        "instruction": "Quero ver o nome dos clientes e o número de compras que cada um fez.",
+        "input": "",
+        "output": "SELECT cliente.nome, COUNT(venda.id) AS compras FROM cliente JOIN venda ON cliente.id = venda.cliente_id GROUP BY cliente.nome;"
+    },
+    {
+        "instruction": "Me mostre todos os produtos que custam exatamente 600 reais.",
+        "input": "",
+        "output": "SELECT nome FROM produto WHERE preco = 600;"
+    },
+    {
+        "instruction": "Quero saber quais cidades têm clientes que compraram mais de um produto.",
+        "input": "",
+        "output": "SELECT DISTINCT endereco.cidade FROM cliente JOIN venda ON cliente.id = venda.cliente_id JOIN endereco ON cliente.id = endereco.cliente_id GROUP BY endereco.cidade, cliente.id HAVING COUNT(venda.produto_id) > 1;"
+    }
+
+]
